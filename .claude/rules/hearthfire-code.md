@@ -76,18 +76,19 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   then 1.15 with 0.3, both too bright; it is dimmer now. The face colour is multiplied by a
   generated tiling value-noise texture in `_FaceTex` (`RuneGlow.MakeNoise`, skipped on dedicated
   servers), so the glow is patchy; each carving drifts it from its own random offset through
-  `_FaceTex_ST` in the same property block. The same darkness and flicker drive a shadowless
-  point light per carving (`glow light` child, `LightLift` in front of the slab's middle, moved
-  when the slab is refit, off by day and beyond `LightDistance`). It is `ForcePixel`: as a faint Auto
-  light it showed nothing in game, most likely because it was drawn per vertex and a wall's few
-  big quads have no vertices in its range. Measuring
+  `_FaceTex_ST` in the same property block. A point light per carving was tried and removed: as
+  an Auto light it showed nothing, and as `ForcePixel` it would add a forward pass to every
+  surface near every carving, uncapped. Measuring
   the live sun and ambient light instead stopped finding night after tabbing out of the game.
   Vertex colour is white with `RuneAlpha`, so the material decides the colour. Local fires don't
   count. The shared material alone was not
   enough: after tabbing out of the game, carvings placed earlier stayed black while new ones
   glowed. So each carving also writes the frame's colour onto its own text and sub-mesh renderers
   as a property block in `LateUpdate` (`RuneGlow.ApplyTo`, keeping vanilla's values in the block)
-  and rescans those renderers every `RefreshInterval`.
+  and rescans those renderers every `RefreshInterval` into a reused list. `LateUpdate` (colour
+  and depth nudge) skips carvings whose text renderer no camera drew last frame, and writes the
+  text scale only when the ratio moves by more than `RatioStep`, since a new scale makes TMP
+  rewrite its mesh; dedicated servers skip `RuneGlow.Tick`.
   It is top-left aligned in a zero-size rect, so the piece origin (the aimed point) is the first
   rune's top-left corner and the slab extends to +X and -Y from it (`RuneCarving.SlabCenter`).
 - The font is vanilla `Valheim-Rune`, the one `TextViewer` shows runestone text in (it draws Latin

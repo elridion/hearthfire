@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -6,7 +7,7 @@ namespace Hearthfire
     /// <summary>
     /// Runes carved onto whatever surface the piece sits on. Players write it like a vanilla sign;
     /// the text is saved in the ZDO and shown in the vanilla rune font of the runestones, black by
-    /// day and glowing like embers, with a faint light, in the dark (<see cref="RuneGlow"/>). The collider is resized with the text and
+    /// day and glowing like embers in the dark (<see cref="RuneGlow"/>). The collider is resized with the text and
     /// keeps its back face on the surface, where placement put it.
     /// </summary>
     public class RuneCarving : MonoBehaviour, Hoverable, Interactable, TextReceiver
@@ -42,12 +43,9 @@ namespace Hearthfire
         // of the runes is drawn over.
         private const float DepthNudge = 0.03f;
         private const float MaxDepthNudge = 0.25f;
-        // The glow light sits this far in front of the middle of the runes, so it lights the
-        // surface around them, and is off beyond LightDistance, where its tint can't be seen.
-        public const float LightLift = 0.15f;
-        private const float LightDistance = 40f;
-        // Below this intensity the light is switched off rather than drawn invisibly.
-        private const float MinLightIntensity = 0.01f;
+        // A new text scale makes TextMeshPro rewrite and upload its mesh, so the scale is only
+        // written when the nudge ratio has moved by more than this; the difference can't be seen.
+        private const float RatioStep = 0.0001f;
 
         private static readonly int s_textKey = "hearthfire_runes".GetStableHashCode();
         private static readonly bool s_headless = SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null;
@@ -56,7 +54,6 @@ namespace Hearthfire
         // vertical one a single column read top to bottom.
         public bool m_vertical;
         public TextMeshPro m_text;
-        public Light m_light;
 
         private ZNetView m_nview;
         private Piece m_piece;
@@ -66,8 +63,11 @@ namespace Hearthfire
         private Vector3 m_textLocalPosition;
         // The text's renderer and TMP's sub-mesh renderers for glyphs on further atlas pages. TMP adds
         // sub-meshes when it builds the text, after Show, so the list is rescanned now and then.
-        private MeshRenderer[] m_renderers = new MeshRenderer[0];
+        private readonly List<MeshRenderer> m_renderers = new List<MeshRenderer>();
         private float m_nextRendererScan;
+        // The text's own renderer, whose visibility decides whether the carving is worked on.
+        private MeshRenderer m_textRenderer;
+        private float m_lastRatio = 1f;
         // Where this carving's ember noise starts, so neighbouring carvings glow differently.
         private Vector2 m_noiseOffset;
 
@@ -76,7 +76,11 @@ namespace Hearthfire
             m_nview = GetComponent<ZNetView>();
             m_piece = GetComponent<Piece>();
             m_collider = GetComponent<BoxCollider>();
-            if (m_text) m_textLocalPosition = m_text.transform.localPosition;
+            if (m_text)
+            {
+                m_textLocalPosition = m_text.transform.localPosition;
+                m_textRenderer = m_text.GetComponent<MeshRenderer>();
+            }
             m_noiseOffset = new Vector2(Random.value, Random.value);
         }
 
@@ -92,17 +96,23 @@ namespace Hearthfire
             InvokeRepeating(nameof(Refresh), 0f, RefreshInterval);
         }
 
-        private void Update() => RuneGlow.Tick();
+        // Dedicated servers draw nothing, so they don't colour the runes either.
+        private void Update()
+        {
+            if (!s_headless) RuneGlow.Tick();
+        }
 
         // Scaling about the camera keeps every point of the text on its line of sight, so only its
-        // depth changes. The collider stays where placement put it.
+        // depth changes. The collider stays where placement put it. Carvings no camera drew last
+        // frame are skipped: with many carvings in a base, writing every one each frame added up.
+        // One drawn again gets its colour and nudge before it is drawn.
         private void LateUpdate()
         {
-            if (s_headless || !m_text) return;
+            if (s_headless || !m_text || !m_textRenderer || !m_textRenderer.isVisible) return;
             if (Time.time >= m_nextRendererScan)
             {
                 m_nextRendererScan = Time.time + RefreshInterval;
-                m_renderers = m_text.GetComponentsInChildren<MeshRenderer>(true);
+                m_text.GetComponentsInChildren(true, m_renderers);
             }
             foreach (var renderer in m_renderers) RuneGlow.ApplyTo(renderer, m_noiseOffset);
 
@@ -110,15 +120,6 @@ namespace Hearthfire
             if (!camera) return;
 
             Vector3 eye = camera.transform.position;
-            if (m_light)
-            {
-                float intensity = RuneGlow.LightIntensity;
-                bool lit = intensity >= MinLightIntensity
-                    && (m_light.transform.position - eye).sqrMagnitude < LightDistance * LightDistance;
-                if (lit) m_light.intensity = intensity;
-                if (m_light.enabled != lit) m_light.enabled = lit;
-            }
-
             Vector3 position = transform.TransformPoint(m_textLocalPosition);
             Vector3 toEye = eye - position;
             float distance = toEye.magnitude;
@@ -131,9 +132,12 @@ namespace Hearthfire
                 nudge = Mathf.Min(nudge, distance * 0.5f);
                 ratio = (distance - nudge) / distance;
             }
-            var text = m_text.transform;
-            text.position = eye + (position - eye) * ratio;
-            text.localScale = new Vector3(ratio, ratio, ratio);
+            if (Mathf.Abs(ratio - m_lastRatio) > RatioStep)
+            {
+                m_lastRatio = ratio;
+                m_text.transform.localScale = new Vector3(ratio, ratio, ratio);
+            }
+            m_text.transform.position = eye + (position - eye) * m_lastRatio;
         }
 
         private void Refresh()
@@ -164,12 +168,8 @@ namespace Hearthfire
                 size = new Vector2(Mathf.Max(size.x, LineHeight), Mathf.Max(size.y, LineHeight));
                 m_collider.size = new Vector3(size.x, size.y, Thickness);
                 m_collider.center = SlabCenter(size);
-                if (m_light) m_light.transform.localPosition = LightPosition(m_collider.center);
             }
         }
-
-        // In front of the middle of the slab, whose centre is given.
-        public static Vector3 LightPosition(Vector3 slabCenter) => new Vector3(slabCenter.x, slabCenter.y, -LightLift);
 
         // The runes start at the piece origin, the point aimed at while placing, and run right and
         // down from it, so a carving lines up with an edge or another carving by where it starts.

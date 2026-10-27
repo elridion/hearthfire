@@ -5,8 +5,7 @@ namespace Hearthfire
 {
     /// <summary>
     /// Colours the rune carvings by the time of day: burnt-in black in daylight, a faint glow at
-    /// dusk and dawn and a slowly flickering, patchy ember glow, with a faint light on the surface around
-    /// each carving, at night and in always-dark places. The rune text is unlit, so it can't darken or
+    /// dusk and dawn and a slowly flickering, patchy ember glow at night and in always-dark places. The rune text is unlit, so it can't darken or
     /// light up by itself. The colour is worked out once per frame and set on the shared material, and
     /// every carving also writes it onto its own renderers as a property block: after tabbing out of
     /// the game, carvings placed earlier stayed black although the shared material kept changing.
@@ -38,12 +37,6 @@ namespace Hearthfire
         public const float GlowInner = 0.05f;
         public const float GlowPower = 0.75f;
 
-        // Faint warm point light on each carving, faded in with the dark like the runes. No
-        // shadows and a small range: it only tints the surface around the runes.
-        public static readonly Color LightColour = new Color(1f, 0.5f, 0.2f, 1f);
-        public const float LightRange = 2f;
-        private const float NightLightIntensity = 0.8f;
-
         // Slow ember pulse: brightness wanders between 1 - FlickerDepth and 1.
         private const float FlickerDepth = 0.2f;
         private const float FlickerSpeed = 0.6f;
@@ -67,9 +60,6 @@ namespace Hearthfire
         private static Color s_face = s_dayColour;
         private static Color s_halo;
         private static readonly MaterialPropertyBlock s_block = new MaterialPropertyBlock();
-
-        // This frame's intensity for every carving's light; 0 by day.
-        public static float LightIntensity { get; private set; }
 
         // The carvings' own copy of the font material; the font's is the runestones' too.
         public static void Use(Material material, bool hasHalo)
@@ -103,9 +93,7 @@ namespace Hearthfire
             s_halo = s_haloColour;
             s_halo.a *= dark * flicker;
             s_material.SetColor(ShaderUtilities.ID_FaceColor, s_face);
-            if (s_hasHalo) s_material.SetColor(ShaderUtilities.ID_GlowColor, s_halo);
-            LightIntensity = NightLightIntensity * dark * flicker;
-        }
+            if (s_hasHalo) s_material.SetColor(ShaderUtilities.ID_GlowColor, s_halo);        }
 
         // Puts this frame's colour, and the noise drifted from the carving's own offset, on one
         // carving's renderer. Other values in its property block (vanilla's hover highlight) are kept.
