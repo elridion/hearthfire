@@ -37,6 +37,9 @@
     <EmbeddedResource Include="assets\models\celtic_idols\*.obj.gz" LogicalName="Hearthfire.%(Filename)%(Extension)" />
     <EmbeddedResource Include="assets\textures\celtic_idols\*.jpg" LogicalName="Hearthfire.%(Filename)%(Extension)" />
     <EmbeddedResource Include="assets\textures\celtic_idols\*.png" LogicalName="Hearthfire.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="assets\models\hanging_core\*.obj.gz" LogicalName="Hearthfire.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="assets\textures\hanging_core\*.jpg" LogicalName="Hearthfire.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="assets\textures\hanging_core\*.png" LogicalName="Hearthfire.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <!-- Player-facing text, one Jotunn JSON file per Valheim language, loaded by

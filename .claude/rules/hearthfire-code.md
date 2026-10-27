@@ -52,16 +52,18 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   sounds and trigger colliders, then `StripModel` its meshes, colliders and snap points; comfort is
   set to 0, so it is no fire and needs no fuel. The brazier is iron: `UseWoodSounds` copies the
   `sign`'s `Piece.m_placeEffect` and `WearNTear` material, hit and destroyed effects. The model
-  hangs from the origin: `LineRenderer`s with the `Cart`'s rope line material and texture mode
-  (vanilla's only rope; a stretched Unity cylinder in the leather scraps' material looked bad): a
-  `RopeWidth` line down to the core's top and a net around the core, `StrandCount` top-to-bottom
-  strands and a ring at its middle on a sphere `NetGap` times the core's radius. A thin single
-  line ending on the core's top did not read as holding it. Below the rope hangs a copy of `Pickable_SurtlingCoreStand`'s `core` child at its world scale,
-  stripped to mesh, light and `LightFlicker` (`StripToGlow`), top at the rope's end. The
-  `SurtlingCore` item was used first, but its root carries the dropped-item sparkle particles.
-  The core's light gets `s_lightColor`, `LightRange` and `LightIntensity`, softer than a torch.
-  One `BoxCollider` from the origin to the core's bottom, so placement puts the rope's top on the
-  aimed underside.
+  hangs from the origin: the embedded knotted rope (`rope.obj.gz`, top of its small loop at the
+  origin, big loop below) scaled by `RopeScale`, in a `PieceUtils.MakeStandardMaterial` copy of the
+  ward stone's material with its maps loaded as Repeat (its UVs run past 0..1). Tried before and
+  dropped: a stretched Unity cylinder in the leather scraps' material, then `LineRenderer`s with
+  the `Cart`'s rope line material (thin, and a net of lines did not read as holding the core). In
+  the big loop sits a copy of `Pickable_SurtlingCoreStand`'s `core` child, stripped to mesh, light
+  and `LightFlicker` (`StripToGlow`), scaled to `CoreFit` times the loop opening's `LoopRadius`
+  and centred on `s_loopCentre` (both measured in the model, see its README; the vanilla core is
+  about three times too big for the loop). The `SurtlingCore` item was used first, but its root
+  carries the dropped-item sparkle particles. The core's light gets `s_lightColor`, `LightRange`
+  and `LightIntensity`, softer than a torch. One `BoxCollider` around rope and core whose top is
+  the origin, so placement puts the small loop's top on the aimed underside.
 - `IdolPieces` clones `stone_pillar` (stone `WearNTear`, stonecutter, destruction effects), sits in
   the Furniture category with only the `PieceUsages.Decor` tag (the hammer's Decor tab), strips its
   model, colliders and snap points, and adds the idol mesh (in metres, base on the origin). Its
@@ -69,7 +71,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   reaching into it: one box around the idol was far too big in game. Stone idol I (`BowlIdol`) has a
   big stone bowl in front of the figure, which banded hulls filled; it gets hulls for the figure
   only (`x <= BowlEdgeX`, measured in ObjLoader's mirrored space), a box up to `BowlFloor` and one
-  hull per rim sector (`RimSectors`), so things can be placed in the bowl. Its material copies `guard_stone`'s `PrivateArea.m_model` material (Standard shader)
+  hull per rim sector (`RimSectors`), so things can be placed in the bowl. Its material (`PieceUtils.MakeStandardMaterial`, shared with the hanging core's rope) copies `guard_stone`'s `PrivateArea.m_model` material (Standard shader)
   with the idol's albedo and normal map and a constant glossiness. Textures are compressed to DXT on
   clients after loading. Icons render the idol turned 180° (`IconTurn`), since the isometric
   camera otherwise sees its back; placed idols keep the model's orientation.
@@ -151,7 +153,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
 A missing `fermenter` or `dvergrprops_barrel` skips the cask; a barrel without meshes keeps the
 fermenter's model; a failed icon render keeps the fermenter's icon. The crate does the same with
 `piece_chest_wood` and `dvergrprops_crate`. A missing `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`,
-`Cart` or `sign` (or a stand without a `core` mesh, or a cart without a rope line) skips the
-hanging core. A missing `stone_pillar` or
+`sign` or `guard_stone` material, a stand without a `core` mesh, or a rope model or albedo that
+fails to load skips the hanging core; a missing rope normal map falls back to a flat one. A missing `stone_pillar` or
 `guard_stone` skips the idols, and an idol whose model or albedo fails to load is skipped alone.
 A missing `sign` or rune font skips both rune carvings; dedicated servers get no icons.

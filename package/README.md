@@ -8,7 +8,7 @@ Pieces I handpicked for my own homestead because I find them cool, kept close to
 | --- | --- | --- | --- | --- |
 | Dvergr cask | A better fermenter: 30 minutes instead of 40, 8 meads instead of 6, also for other mods' meads | Crafting | Workbench | 30 Fine wood, 5 Black metal, 10 Resin |
 | Dvergr crate | Storage that looks at home outside, 3 x 3 slots | Storage | Workbench | 10 Wood, 2 Resin |
-| Hanging surtling core | Hangs on a rope under a beam or roof and glows without fuel, never going out; no warmth or comfort | Lighting | Workbench | 1 Surtling core, 2 Leather scraps |
+| Hanging surtling core | Held in a knotted rope under a beam or roof, it glows without fuel, never going out; no warmth or comfort | Lighting | Workbench | 1 Surtling core, 2 Leather scraps |
 | Stone idol I to XII | Twelve weathered stone idols; Stone idol I's bowl holds whatever you place in it | Decor | Stonecutter | 20 Stone each |
 | Rune carving (horizontal, vertical) | Write on it like a sign; the runes start where you aim, grey at noon, glowing more like embers towards midnight | Furniture | Workbench | 1 Coal each |
 
@@ -39,5 +39,8 @@ refunding them, including mead fermenting in a cask.
 - Stone idols: "Celtic Pagan Idols" by ELargin
   ([Unity Asset Store](https://assetstore.unity.com/packages/3d/props/exterior/celtic-pagan-idols-177494)),
   used with the author's kind permission, converted and downscaled.
+- Hanging core rope: "Hello Neighbor 2 Rope" by irons3th
+  ([Sketchfab](https://sketchfab.com/3d-models/hello-neighbor-2-rope-0cdb55aff5644b0e8addfcd91801207e)),
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), converted, decimated and downscaled.
 - Icon: "Viking longhouse" by Delapouite from [game-icons.net](https://game-icons.net),
   [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), recoloured and outlined.

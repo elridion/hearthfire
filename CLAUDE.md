@@ -3,7 +3,7 @@
 Valheim mod adding building pieces that look like they shipped with the game: the **Dvergr cask**
 (a fermenter whose model is the vanilla `dvergrprops_barrel` prop), the **Dvergr crate** (a wood chest
 whose model is the vanilla `dvergrprops_crate` prop, for storage outside), the **hanging surtling
-core** (a fuel-free light hung on a rope, built on the hanging brazier) and twelve **stone idols**
+core** (a fuel-free light held in a knotted rope, built on the hanging brazier) and twelve **stone idols**
 (decorative, models from ELargin's "Celtic Pagan Idols"), plus two **rune carvings** written like
 signs (horizontal and vertical). Anything that would look out of place
 next to vanilla builds does not belong here. It grew out of the unreleased Cask mod.
@@ -25,7 +25,9 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
 - `src/Common/`: `PieceUtils.cs` helpers more than one piece family uses, `ObjLoader.cs` the OBJ
   reader (Warden's, plus gzipped resources).
 - `assets/models/celtic_idols/` idol meshes (`idolNN.obj.gz`) with source and license notes;
-  `assets/textures/celtic_idols/` their albedo and normal maps. `tools/make_icon.ps1` the icon.
+  `assets/textures/celtic_idols/` their albedo and normal maps. `assets/models/hanging_core/` the
+  hanging core's rope (`rope.obj.gz`) with source and license notes, `assets/textures/hanging_core/`
+  its maps. `tools/make_icon.ps1` the icon.
 
 ## Invariants that must not break
 
@@ -41,7 +43,7 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
   keeps a little punctuation and maps the rest by code point modulo the font's drawn a-z letters.
   Changing that mapping changes every carving in every world.
 - **Vanilla assets are shared.** Never modify the `fermenter`, `dvergrprops_barrel`, `piece_chest_wood`,
-  `dvergrprops_crate`, `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`, `Cart`, `stone_pillar`,
+  `dvergrprops_crate`, `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`, `stone_pillar`,
   `guard_stone` or `sign` prefabs or their materials; edit only the clones and copies.
 - **Docs follow code.** `package/README.md` is a short personal intro and one pieces table (what
   each piece does, hammer tab, station, cost); a new piece adds a row. In the same change the table
@@ -56,5 +58,8 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
   archive is downloaded to the gitignored `assets/source/`). Credit stays in both READMEs.
 - The idols are used with ELargin's written permission (email, October 2026; see
   `assets/models/celtic_idols/README.md`). They are not MIT: credit ELargin in both READMEs.
-- Embedded files inflate the DLL every player downloads (about 3.6 MB, nearly all idols); keep new
+- The hanging core's rope is "Hello Neighbor 2 Rope" by irons3th (Sketchfab, CC BY 4.0): credit
+  irons3th in both READMEs. Its names suggest it was extracted from that game; see
+  `assets/models/hanging_core/README.md` before reusing it.
+- Embedded files inflate the DLL every player downloads (about 3.8 MB, nearly all idols); keep new
   assets small.

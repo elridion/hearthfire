@@ -6,11 +6,12 @@ using UnityEngine;
 namespace Hearthfire
 {
     /// <summary>
-    /// Builds and registers the hanging surtling core: a surtling core on a rope that hangs under a
-    /// beam or roof and glows without fuel. It clones the hanging brazier for its placement and
-    /// support from above, then strips everything that makes the brazier a fire (fuel, flames, heat,
-    /// smoke, sound): the core never goes out, but it gives no warmth or comfort either. The brazier
-    /// is iron, so its build, hit and break sounds are swapped for the wooden sign's.
+    /// Builds and registers the hanging surtling core: a surtling core held in the big loop of a
+    /// knotted rope that hangs by its small loop under a beam or roof, glowing without fuel. It
+    /// clones the hanging brazier for its placement and support from above, then strips everything
+    /// that makes the brazier a fire (fuel, flames, heat, smoke, sound): the core never goes out, but
+    /// it gives no warmth or comfort either. The brazier is iron, so its build, hit and break sounds
+    /// are swapped for the wooden sign's. The rope is an embedded model (irons3th, CC BY 4.0).
     /// </summary>
     internal static class HangingCorePiece
     {
@@ -21,23 +22,24 @@ namespace Hearthfire
         // SurtlingCore item, no "pick me up" sparkle.
         private const string CoreStandPrefab = "Pickable_SurtlingCoreStand";
         private const string CoreChild = "core";
-        // The cart's pulling line is vanilla's only rope.
-        private const string RopePrefab = "Cart";
         private const string SoundPrefab = "sign";
+
+        private const string RopeModel = "Hearthfire.rope.obj.gz";
+        private const string RopeAlbedo = "Hearthfire.rope_albedo.jpg";
+        private const string RopeNormal = "Hearthfire.rope_n.png";
 
         private static readonly string[] s_buildUsage = { PieceUsages.Lighting };
 
-        // The rope hangs from the piece origin, which placement puts on the aimed underside. A
-        // single line ending on the core's top did not read as holding it, so the rope ends in a
-        // net: strands from top to bottom around the core and a ring around its middle.
-        private const float RopeLength = 0.5f;
-        private const float RopeWidth = 0.045f;
-        private const float StrandWidth = 0.028f;
-        private const int StrandCount = 4;
-        private const int StrandSegments = 12;
-        private const int RingSegments = 16;
-        // How far the net sits outside the core, as a factor of the core's radius.
-        private const float NetGap = 1.05f;
+        // The rope model hangs from the origin (the top of its small loop), which placement puts on
+        // the aimed underside. Measured in the model (see assets/models/hanging_core/README.md,
+        // X mirrored like ObjLoader): the big loop's opening fits a circle of LoopRadius around
+        // LoopCentre. The model is 0.75 m long; RopeScale makes it about 1 m.
+        private const float RopeScale = 1.3f;
+        private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
+        private const float LoopRadius = 0.0437f;
+        // The core is a little wider than the opening, so the loop presses on it and holds it.
+        private const float CoreFit = 1.3f;
+        private const float RopeGlossiness = 0.05f;
 
         // A soft glow for a corner rather than a torch that lights the room.
         private const float LightRange = 6f;
@@ -48,9 +50,7 @@ namespace Hearthfire
         {
             PrefabManager.OnVanillaPrefabsAvailable -= Register;
 
-            if (!RequirePrefab(BrazierPrefab) || !RequirePrefab(CoreStandPrefab) || !RequirePrefab(RopePrefab) ||
-                !RequirePrefab(SoundPrefab))
-                return;
+            if (!RequirePrefab(BrazierPrefab) || !RequirePrefab(CoreStandPrefab) || !RequirePrefab(SoundPrefab)) return;
             try
             {
                 Build();
@@ -65,18 +65,22 @@ namespace Hearthfire
 
         private static void Build()
         {
-            var rope = PrefabManager.Cache.GetPrefab<GameObject>(RopePrefab).GetComponentInChildren<LineRenderer>(true);
-            if (!rope || !rope.sharedMaterial)
-            {
-                Jotunn.Logger.LogWarning($"'{RopePrefab}' has no rope line; skipping {PrefabName}.");
-                return;
-            }
             var coreSource = FindChild(PrefabManager.Cache.GetPrefab<GameObject>(CoreStandPrefab).transform, CoreChild);
             if (!coreSource || !coreSource.GetComponent<MeshFilter>())
             {
                 Jotunn.Logger.LogWarning($"'{CoreStandPrefab}' has no '{CoreChild}' mesh; skipping {PrefabName}.");
                 return;
             }
+            var materialSource = PieceUtils.StandardMaterialSource(PrefabName);
+            if (!materialSource) return;
+            var ropeMesh = ObjLoader.LoadEmbedded(RopeModel, "hearthfire_rope");
+            var ropeAlbedo = PieceUtils.LoadEmbeddedTexture(RopeAlbedo, false, TextureWrapMode.Repeat);
+            if (!ropeMesh || !ropeAlbedo)
+            {
+                Jotunn.Logger.LogWarning($"Rope model or texture missing; skipping {PrefabName}.");
+                return;
+            }
+            var ropeNormal = PieceUtils.LoadEmbeddedTexture(RopeNormal, true, TextureWrapMode.Repeat);
 
             // The crafting station (workbench) stays the cloned brazier's.
             var config = new PieceConfig
@@ -93,8 +97,13 @@ namespace Hearthfire
 
             var model = new GameObject("hanging_core");
             model.transform.SetParent(prefab.transform, false);
-            var coreBounds = AddCore(model.transform, coreSource);
-            AddRope(model.transform, rope, coreBounds);
+            var rope = new GameObject("rope");
+            rope.transform.SetParent(model.transform, false);
+            rope.transform.localScale = Vector3.one * RopeScale;
+            rope.AddComponent<MeshFilter>().sharedMesh = ropeMesh;
+            rope.AddComponent<MeshRenderer>().sharedMaterial =
+                PieceUtils.MakeStandardMaterial(materialSource, ropeAlbedo, ropeNormal, "hearthfire_rope", RopeGlossiness);
+            AddCore(model.transform, coreSource);
 
             StripFire(prefab, model.transform);
             PieceUtils.StripModel(prefab, model.transform);
@@ -110,12 +119,12 @@ namespace Hearthfire
             // lets the build hammer target it.
             foreach (var t in model.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
 
-            // Placement only snaps to convex colliders. The box runs from the rope's top at the
-            // origin to the core's bottom, so it sits against the underside it hangs from and takes
-            // support from it.
+            // Placement only snaps to convex colliders. The box's top is the small loop's top at
+            // the origin, so it sits against the underside it hangs from and takes support from it.
+            var bounds = PieceUtils.MeshBounds(model.transform, prefab.transform);
             var box = prefab.AddComponent<BoxCollider>();
-            box.center = new Vector3(coreBounds.center.x, coreBounds.min.y / 2f, coreBounds.center.z);
-            box.size = new Vector3(coreBounds.size.x, -coreBounds.min.y, coreBounds.size.z);
+            box.center = bounds.center;
+            box.size = bounds.size;
 
             var icon = PieceUtils.RenderIcon(prefab);
             if (icon) pieceComponent.m_icon = icon;
@@ -123,71 +132,22 @@ namespace Hearthfire
             PieceManager.Instance.AddPiece(piece);
         }
 
-        // A straight line from the origin down to the core's top, then the net around the core,
-        // all drawn like the cart's rope with its material and texture mode.
-        private static void AddRope(Transform parent, LineRenderer source, Bounds core)
-        {
-            var center = core.center;
-            float radius = Mathf.Max(core.extents.x, core.extents.y, core.extents.z) * NetGap;
-            var top = center + Vector3.up * radius;
-
-            AddLine(parent, source, "rope", RopeWidth, false, Vector3.zero, top);
-
-            for (int s = 0; s < StrandCount; s++)
-            {
-                float around = s * Mathf.PI * 2f / StrandCount;
-                var points = new Vector3[StrandSegments + 1];
-                for (int i = 0; i <= StrandSegments; i++)
-                {
-                    float down = Mathf.PI * i / StrandSegments;
-                    points[i] = center + new Vector3(Mathf.Sin(down) * Mathf.Cos(around), Mathf.Cos(down),
-                        Mathf.Sin(down) * Mathf.Sin(around)) * radius;
-                }
-                AddLine(parent, source, "strand", StrandWidth, false, points);
-            }
-
-            var ring = new Vector3[RingSegments];
-            for (int i = 0; i < RingSegments; i++)
-            {
-                float around = i * Mathf.PI * 2f / RingSegments;
-                ring[i] = center + new Vector3(Mathf.Cos(around), 0f, Mathf.Sin(around)) * radius;
-            }
-            AddLine(parent, source, "ring", StrandWidth, true, ring);
-        }
-
-        private static void AddLine(Transform parent, LineRenderer source, string name, float width, bool loop,
-            params Vector3[] points)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(parent, false);
-            var line = go.AddComponent<LineRenderer>();
-            line.sharedMaterial = source.sharedMaterial;
-            line.textureMode = source.textureMode;
-            line.alignment = source.alignment;
-            line.numCapVertices = source.numCapVertices;
-            line.numCornerVertices = 2;
-            line.shadowCastingMode = source.shadowCastingMode;
-            line.receiveShadows = source.receiveShadows;
-            line.useWorldSpace = false;
-            line.loop = loop;
-            line.widthMultiplier = width;
-            line.positionCount = points.Length;
-            line.SetPositions(points);
-        }
-
-        // A copy of the core stand's core and its light, hung with its top at the rope's end.
-        // Returns the core's bounds in parent space.
-        private static Bounds AddCore(Transform parent, Transform source)
+        // A copy of the core stand's core and its light, sized to sit in the rope's big loop and
+        // centred on it.
+        private static void AddCore(Transform parent, Transform source)
         {
             var core = Object.Instantiate(source.gameObject, parent, false);
             core.name = "core";
-            // The stand's visual is scaled up; keep the core at the size it has on the stand.
             core.transform.localScale = source.lossyScale;
             core.transform.localPosition = Vector3.zero;
             core.transform.localRotation = Quaternion.identity;
             StripToGlow(core);
+
             var raw = PieceUtils.MeshBounds(core.transform, parent);
-            core.transform.localPosition = new Vector3(-raw.center.x, -RopeLength - raw.max.y, -raw.center.z);
+            float radius = Mathf.Max(raw.extents.x, raw.extents.y, raw.extents.z);
+            if (radius > 0f) core.transform.localScale *= LoopRadius * RopeScale * CoreFit / radius;
+            var sized = PieceUtils.MeshBounds(core.transform, parent);
+            core.transform.localPosition = s_loopCentre * RopeScale - sized.center;
 
             // Keep the stand's light, so the flicker on it still flickers it.
             var lights = core.GetComponentsInChildren<Light>(true);
@@ -201,7 +161,7 @@ namespace Hearthfire
             {
                 var go = new GameObject("light");
                 go.transform.SetParent(parent, false);
-                go.transform.localPosition = new Vector3(0f, -RopeLength - raw.size.y / 2f, 0f);
+                go.transform.localPosition = s_loopCentre * RopeScale;
                 light = go.AddComponent<Light>();
             }
             light.type = LightType.Point;
@@ -210,8 +170,6 @@ namespace Hearthfire
             light.intensity = LightIntensity;
             light.shadows = LightShadows.Soft;
             light.gameObject.SetActive(true);
-
-            return PieceUtils.MeshBounds(core.transform, parent);
         }
 
         // Swaps the brazier's iron sounds and material for the wooden sign's: placing, hitting and

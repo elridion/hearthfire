@@ -5,7 +5,7 @@
 - New Dvergr crate in the Storage tab (workbench: 10 Wood, 2 Resin): storage built from the dvergr
   crate prop with 3 x 3 slots.
 - New Hanging surtling core in the Lighting tab (workbench: 1 Surtling core, 2 Leather scraps): a
-  core on a rope that hangs under a beam or roof and glows without fuel. It never goes out,
+  core held in a knotted rope that hangs under a beam or roof and glows without fuel. It never goes out,
   but it is not a fire: no warmth, no comfort.
 
 ## 0.1.2

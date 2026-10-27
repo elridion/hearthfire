@@ -18,7 +18,6 @@ namespace Hearthfire
         public const int Count = 12;
         public const string DescriptionKey = "piece_celticidol_description";
         private const string BasePrefab = "stone_pillar";
-        private const string MaterialPrefab = "guard_stone";
 
         // Smoothness of the weathered stone; the source's smoothness maps average about this after
         // their 0.2 gloss scale, so a constant replaces them.
@@ -41,9 +40,6 @@ namespace Hearthfire
         private const float BowlFloor = 0.55f;
         private const int RimSectors = 8;
 
-        // DXT5nm-style flat normal (R = 1, G = Y, B = 1, A = X).
-        private static readonly Color32 s_flatNormal = new Color32(255, 128, 255, 128);
-
         public static string PrefabName(int index) => $"piece_celticidol{index:00}";
 
         public static void Register()
@@ -51,7 +47,7 @@ namespace Hearthfire
             PrefabManager.OnVanillaPrefabsAvailable -= Register;
 
             if (!RequirePrefab(BasePrefab)) return;
-            var source = SourceMaterial();
+            var source = PieceUtils.StandardMaterialSource("the stone idols");
             if (!source) return;
 
             for (int i = 1; i <= Count; i++)
@@ -71,14 +67,14 @@ namespace Hearthfire
         {
             var name = PrefabName(index);
             var mesh = ObjLoader.LoadEmbedded($"Hearthfire.idol{index:00}.obj.gz", name);
-            var albedo = LoadEmbeddedTexture($"Hearthfire.idol{index:00}_albedo.jpg", false);
+            var albedo = PieceUtils.LoadEmbeddedTexture($"Hearthfire.idol{index:00}_albedo.jpg", false);
             // Without the albedo the pillar's textures would land scrambled on the idol's UVs.
             if (!mesh || !albedo)
             {
                 Jotunn.Logger.LogWarning($"Idol {index} model or texture missing; skipping {name}.");
                 return;
             }
-            var normal = LoadEmbeddedTexture($"Hearthfire.idol{index:00}_n.png", true);
+            var normal = PieceUtils.LoadEmbeddedTexture($"Hearthfire.idol{index:00}_n.png", true);
 
             var config = new PieceConfig
             {
@@ -97,7 +93,7 @@ namespace Hearthfire
             model.transform.SetParent(prefab.transform, false);
             model.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = model.AddComponent<MeshRenderer>();
-            renderer.sharedMaterial = MakeMaterial(source, albedo, normal, name);
+            renderer.sharedMaterial = PieceUtils.MakeStandardMaterial(source, albedo, normal, name, Glossiness);
             // Lights in Valheim cull by layer; the piece layer also makes the model hoverable and
             // lets the build hammer target it.
             model.layer = prefab.layer;
@@ -227,87 +223,6 @@ namespace Hearthfire
             (vertices[triangles[t]] + vertices[triangles[t + 1]] + vertices[triangles[t + 2]]) / 3f;
 
         private static bool InBowl(Vector3 point) => point.x > BowlEdgeX;
-
-        // The ward stone's model renderer (PrivateArea.m_model) uses the Standard shader with a
-        // normal map, so its copy keeps a shader variant that renders ours.
-        private static Material SourceMaterial()
-        {
-            var ward = PrefabManager.Cache.GetPrefab<GameObject>(MaterialPrefab);
-            var area = ward ? ward.GetComponent<PrivateArea>() : null;
-            var material = area && area.m_model ? area.m_model.sharedMaterial : null;
-            if (!material) Jotunn.Logger.LogWarning($"No material on vanilla '{MaterialPrefab}'; skipping the stone idols.");
-            return material;
-        }
-
-        // Every slot the source carries belongs to the ward stone's UVs, so each one is set
-        // explicitly; a cleared slot would fall back to the shader's default, which can be white.
-        private static Material MakeMaterial(Material source, Texture2D albedo, Texture2D normal, string name)
-        {
-            var material = new Material(source) { name = name };
-            material.mainTexture = albedo;
-            material.mainTextureScale = Vector2.one;
-            material.mainTextureOffset = Vector2.zero;
-            if (material.HasProperty("_Color")) material.SetColor("_Color", Color.white);
-            if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", normal ? normal : FlatNormalTexture());
-            if (material.HasProperty("_BumpScale")) material.SetFloat("_BumpScale", 1f);
-            material.EnableKeyword("_NORMALMAP");
-            if (material.HasProperty("_EmissionMap")) material.SetTexture("_EmissionMap", Texture2D.blackTexture);
-            if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", Color.black);
-            material.DisableKeyword("_EMISSION");
-            if (material.HasProperty("_OcclusionMap")) material.SetTexture("_OcclusionMap", Texture2D.whiteTexture);
-            if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", Glossiness);
-            if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", Glossiness);
-            if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 0f);
-            // With a metallic/gloss map bound, the two values above would be ignored.
-            if (material.HasProperty("_MetallicGlossMap")) material.SetTexture("_MetallicGlossMap", Texture2D.blackTexture);
-            material.DisableKeyword("_METALLICGLOSSMAP");
-            return material;
-        }
-
-        // Stands in for a normal map that fails to load.
-        private static Texture2D FlatNormalTexture()
-        {
-            var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false, true) { name = "hearthfire_flat_normal" };
-            texture.SetPixels32(new[] { s_flatNormal });
-            texture.Apply(false, true);
-            return texture;
-        }
-
-        // Normal maps must load as linear: sRGB decoding would bend the encoded vectors. Textures
-        // are compressed on clients (DXT1 for the opaque albedo, DXT5 for the normal map) to keep
-        // twelve idols' worth of maps small in video memory.
-        private static Texture2D LoadEmbeddedTexture(string resourceName, bool linear)
-        {
-            using (var stream = typeof(IdolPieces).Assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                {
-                    Jotunn.Logger.LogWarning($"Embedded texture '{resourceName}' not found.");
-                    return null;
-                }
-
-                // Stream.Read may return fewer bytes than asked for; read until the buffer is full.
-                var bytes = new byte[stream.Length];
-                int read = 0, count;
-                while (read < bytes.Length && (count = stream.Read(bytes, read, bytes.Length - read)) > 0) read += count;
-
-                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, true, linear) { name = resourceName };
-                if (!Jotunn.Utils.AssetUtils.LoadImage(texture, bytes))
-                {
-                    Jotunn.Logger.LogWarning($"Embedded texture '{resourceName}' failed to decode.");
-                    Object.Destroy(texture);
-                    return null;
-                }
-                texture.wrapMode = TextureWrapMode.Clamp;
-                texture.filterMode = FilterMode.Trilinear;
-                if (SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null)
-                {
-                    texture.Compress(true);
-                    texture.Apply(false, true);
-                }
-                return texture;
-            }
-        }
 
         private static bool RequirePrefab(string prefabName)
         {
