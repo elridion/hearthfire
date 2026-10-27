@@ -44,6 +44,9 @@ namespace Hearthfire
         // The core hangs upside down, on one of its tips, tilted a little off true and turned, so it
         // looks hung rather than set down.
         private static readonly Quaternion s_coreRotation = Quaternion.Euler(192f, 27f, 9f);
+        // How far the core sits below the big loop's centre, in metres: centred, it looked to sit
+        // too high in the loop.
+        private const float CoreDrop = 0.04f;
 
         // A soft glow for a corner rather than a torch that lights the room.
         private const float LightRange = 6f;
@@ -152,7 +155,7 @@ namespace Hearthfire
             StripToGlow(core);
 
             var raw = PieceUtils.MeshBounds(core.transform, parent);
-            var centre = (s_loopCentre - s_hangPoint) * RopeScale;
+            var centre = (s_loopCentre - s_hangPoint) * RopeScale + Vector3.down * CoreDrop;
             core.transform.localPosition = centre - raw.center;
 
             // Keep the stand's light, so the flicker on it still flickers it.

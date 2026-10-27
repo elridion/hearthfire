@@ -62,7 +62,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   the big loop sits a copy of `Pickable_SurtlingCoreStand`'s `core` child, stripped to mesh, light
   and `LightFlicker` (`StripToGlow`), turned upside down onto a tip and a little off true
   (`s_coreRotation`), at the stand's own size (about 14 cm radius, as in
-  the game files; half that was tried and changed back) and centred on `s_loopCentre` (measured in
+  the game files; half that was tried and changed back) and `CoreDrop` (4 cm) below `s_loopCentre` (measured in
   the model, see its README). The loop's opening fits only about 4 cm at this rope size, so the
   loop sinks into the core. The `SurtlingCore` item was used first, but its root
   carries the dropped-item sparkle particles. The core's light gets `s_lightColor`, `LightRange`
