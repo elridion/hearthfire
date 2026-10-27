@@ -38,6 +38,7 @@ namespace Hearthfire
             AddLocalizations();
             PrefabManager.OnVanillaPrefabsAvailable += CaskPiece.Register;
             PrefabManager.OnVanillaPrefabsAvailable += CratePiece.Register;
+            PrefabManager.OnVanillaPrefabsAvailable += HangingCorePiece.Register;
             PrefabManager.OnVanillaPrefabsAvailable += IdolPieces.Register;
             PrefabManager.OnVanillaPrefabsAvailable += RuneCarvingPieces.Register;
 

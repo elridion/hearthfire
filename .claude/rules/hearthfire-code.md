@@ -9,12 +9,13 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
 
 ## Structure
 
-- One class per piece family (`CaskPiece`, `CratePiece`, `IdolPieces`, `RuneCarvingPieces`), each with a static
-  `Register` hooked to `PrefabManager.OnVanillaPrefabsAvailable` in `HearthfirePlugin.Awake`. Each
-  family has its own folder under `src/` (`Cask/`, `Crate/`, `Idols/`, `Runes/`) with its components and
+- One class per piece family (`CaskPiece`, `CratePiece`, `HangingCorePiece`, `IdolPieces`,
+  `RuneCarvingPieces`), each with a static `Register` hooked to
+  `PrefabManager.OnVanillaPrefabsAvailable` in `HearthfirePlugin.Awake`. Each family has its own
+  folder under `src/` (`Cask/`, `Crate/`, `Lights/`, `Idols/`, `Runes/`) with its components and
   patches; a new family gets one too. Helpers more than one family needs go in `src/Common/`
   (`PieceUtils`). Folders don't add namespaces: everything stays in `Hearthfire`.
-- Localization keys: `piece_dvergrcask*`, `piece_dvergrcrate*`, `piece_celticidol01`..`12` (the idols share
+- Localization keys: `piece_dvergrcask*`, `piece_dvergrcrate*`, `piece_hangingsurtlingcore*`, `piece_celticidol01`..`12` (the idols share
   `piece_celticidol_description`), `piece_runecarving`, `piece_runecarving_vertical` and
   `piece_runecarving_description`. The text box reuses vanilla `$piece_sign_input`.
 
@@ -36,12 +37,22 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   is shared by all casks and rebuilt when the fermenter's list changes; the fermenter's own list
   and conversions are never touched. The patch runs for every vanilla fermenter too.
 - `CratePiece` clones `piece_chest_wood`, so it keeps the chest's `Container` (its size and ZDO
-  contents), wood `WearNTear`, workbench and open/close effects; only `m_name` changes. It sits in
-  the Furniture category without a Usage tag, like the rune carvings (10 Wood, 2 Resin). Its model
+  contents), wood `WearNTear`, workbench and open/close effects; only `m_name` changes. The
+  `PieceUsages.Storage` tag puts it in the hammer's Storage tab (10 Wood, 2 Resin). Its model
   is `dvergrprops_crate` swapped in like the cask's barrel (`PieceUtils.StripToVisual`, standing on
   the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`). The chest's lid
   objects stay as empty transforms for `Container` to toggle. Eight inactive `snappoint` children
   on the box corners (direct children: `Piece` reads only those) let crates stack corner to corner.
+- `HangingCorePiece` clones `piece_brazierceiling01` for its hanging placement and support from
+  above, `PieceUsages.Lighting` (1 Surtling core, 2 Leather scraps). `StripFire` removes the
+  brazier's `Fireplace`, `EffectArea` (heat, fire, player base), smoke, lights, particles and
+  sounds, then `StripModel` its meshes, colliders and snap points; comfort is set to 0, so it is
+  no fire and needs no fuel. The model hangs from the origin: a `CordLength` Unity cylinder in the
+  `LeatherScraps` item's material, then the `SurtlingCore` item prefab stripped to renderers,
+  lights, `LightFlicker` and particles (`StripToGlow`) with its top at the cord's end. Its first
+  light (or a new one in the core's middle) gets `s_lightColor`, `LightRange` and
+  `LightIntensity`, softer than a torch. One `BoxCollider` whose top is the origin, so placement
+  puts the cord's top on the aimed underside.
 - `IdolPieces` clones `stone_pillar` (stone `WearNTear`, stonecutter, destruction effects), sits in
   the Furniture category with only the `PieceUsages.Decor` tag (the hammer's Decor tab), strips its
   model, colliders and snap points, and adds the idol mesh (in metres, base on the origin). Its
@@ -130,6 +141,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
 
 A missing `fermenter` or `dvergrprops_barrel` skips the cask; a barrel without meshes keeps the
 fermenter's model; a failed icon render keeps the fermenter's icon. The crate does the same with
-`piece_chest_wood` and `dvergrprops_crate`. A missing `stone_pillar` or
+`piece_chest_wood` and `dvergrprops_crate`. A missing `piece_brazierceiling01`, `SurtlingCore` or
+`LeatherScraps` (or a core without meshes, or scraps without a material) skips the hanging core. A missing `stone_pillar` or
 `guard_stone` skips the idols, and an idol whose model or albedo fails to load is skipped alone.
 A missing `sign` or rune font skips both rune carvings; dedicated servers get no icons.

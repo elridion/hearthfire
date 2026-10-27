@@ -18,6 +18,10 @@ namespace Hearthfire
         private const string ChestPrefab = "piece_chest_wood";
         private const string CratePrefab = "dvergrprops_crate";
 
+        // Hammer tab. Like the cask, the Usage tag decides it; without one the crate keeps whatever
+        // the cloned chest carries.
+        private static readonly string[] s_buildUsage = { PieceUsages.Storage };
+
         public static void Register()
         {
             PrefabManager.OnVanillaPrefabsAvailable -= Register;
@@ -45,6 +49,7 @@ namespace Hearthfire
                 Description = HoverName + "_description",
                 PieceTable = PieceTables.Hammer,
                 Category = PieceCategories.Furniture,
+                Usage = s_buildUsage,
                 Requirements = new[] { Req("Wood", 10), Req("Resin", 2) },
             };
             var piece = new CustomPiece(PrefabName, ChestPrefab, config);
