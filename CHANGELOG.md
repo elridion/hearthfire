@@ -1,11 +1,5 @@
 # Changelog
 
-## 0.1.1
-
-- Rune carvings stay black at any hour. In the dark an ember glow rises around the runes instead,
-  faint at dusk and dawn and stronger at night, and each carving casts a faint warm light on the
-  surface around it.
-
 ## 0.1.0
 
 - First release: the Dvergr cask, a Plains-tier fermenter built from the dvergr barrel prop

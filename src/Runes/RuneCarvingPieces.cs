@@ -101,7 +101,6 @@ namespace Hearthfire
             var carving = prefab.AddComponent<RuneCarving>();
             carving.m_vertical = vertical;
             carving.m_text = text;
-            carving.m_light = MakeLight(prefab, RuneCarving.LightPosition(box.center));
 
             var icon = MakeIcon(vertical);
             if (icon) prefab.GetComponent<Piece>().m_icon = icon;
@@ -124,7 +123,7 @@ namespace Hearthfire
             text.font = font;
             text.fontSharedMaterial = RuneMaterial(font);
             text.fontSize = RuneCarving.LineHeight * font.faceInfo.pointSize / (font.faceInfo.lineHeight * font.faceInfo.scale * WorldTextScale);
-            // White vertex colour: RuneGlow sets the colour and halo on the shared material.
+            // White vertex colour: RuneGlow sets the colour on the shared material, by the light.
             text.color = new Color32(255, 255, 255, RuneCarving.RuneAlpha);
             // With a zero-size rect, top-left alignment starts the first rune at the origin.
             text.alignment = TextAlignmentOptions.TopLeft;
@@ -142,27 +141,9 @@ namespace Hearthfire
             return text;
         }
 
-        // The faint glow light, off until RuneGlow gives it an intensity in the dark. No shadows:
-        // it only tints the surface right around the runes.
-        private static Light MakeLight(GameObject prefab, Vector3 position)
-        {
-            var go = new GameObject("glow light");
-            go.transform.SetParent(prefab.transform, false);
-            go.transform.localPosition = position;
-
-            var light = go.AddComponent<Light>();
-            light.type = LightType.Point;
-            light.color = RuneGlow.LightColour;
-            light.range = RuneGlow.LightRange;
-            light.intensity = 0f;
-            light.shadows = LightShadows.None;
-            light.enabled = false;
-            return light;
-        }
-
-        // A copy of the font's material, shared by both carvings, black and haloed by RuneGlow. The
-        // font's own material is the runestones' too, so it is never changed. A shader without glow
-        // (a mobile variant) gets no halo, only the light.
+        // A copy of the font's material, shared by both carvings and coloured by RuneGlow. The font's
+        // own material is the runestones' too, so it is never changed. A shader without glow (a mobile
+        // variant) still changes colour, only without the halo.
         private static Material RuneMaterial(TMP_FontAsset font)
         {
             if (s_runeMaterial) return s_runeMaterial;
@@ -180,7 +161,7 @@ namespace Hearthfire
             }
             else
             {
-                Jotunn.Logger.LogWarning($"Shader '{source.shader.name}' has no glow; the rune carvings glow without a halo, only with their light.");
+                Jotunn.Logger.LogWarning($"Shader '{source.shader.name}' has no glow; the rune carvings glow without a halo.");
             }
             if (material.HasProperty(ShaderUtilities.ID_FaceDilate)) material.SetFloat(ShaderUtilities.ID_FaceDilate, StrokeDilate);
             // The scale ratios set how much room TMP leaves around each glyph for dilation and glow;

@@ -64,20 +64,15 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   font material is the runestones' too), with the shader's glow on for a halo when it has
   `_GlowColor`, and `_FaceDilate` at `StrokeDilate` because the font's thin staves were hard to
   read by day; `ShaderUtilities.UpdateShaderRatios` runs after these, or TMP leaves too little room
-  around each glyph and cuts the strokes and halo. The face is near-black at any hour; the glow is
-  separate. Each frame (first carving's `Update` per frame) `RuneGlow` works out a strength from
-  the time of day: vanilla's day weight from `EnvMan.GetDayFraction` (0 before sunrise and after
-  sunset, 1 at noon) fades in `TwilightShare` from `FullDaylight` (mid-morning; earlier faded too
-  fast) to sunset, and the rest comes in over `NightFade` (about a game hour) after sunset;
-  environments with `m_alwaysDark` get full strength at any hour. Measuring the live sun and
-  ambient light instead stopped finding night after tabbing out of the game. The strength, with a
-  slow flicker, sets the alpha of the HDR ember halo (`_GlowColor`, which the shader adds on top;
-  `GlowInner` 0 keeps the strokes black) and the intensity of a shadowless point light per
-  carving (`glow light` child, `LightLift` in front of the slab's middle, moved when the slab is
-  refit, off by day and beyond `LightDistance`). Vertex colour is white with `RuneAlpha`, so the
-  material decides the colour. Local fires don't count. The shared material alone was not
+  around each glyph and cuts the strokes and halo. The text is unlit, so `RuneGlow` colours it each frame (first carving's `Update`
+  per frame) by the time of day: vanilla's day weight from `EnvMan.GetDayFraction` (0 before
+  sunrise and after sunset, 1 at noon), near-black from `FullDaylight` (mid-morning; earlier faded too fast) on and HDR ember amber with
+  the halo, pulsing slowly, at night; environments with `m_alwaysDark` glow at any hour. Measuring
+  the live sun and ambient light instead stopped finding night after tabbing out of the game.
+  Vertex colour is white with `RuneAlpha`, so the material decides the colour. Local fires don't
+  count. The shared material alone was not
   enough: after tabbing out of the game, carvings placed earlier stayed black while new ones
-  glowed. So each carving also writes the frame's halo onto its own text and sub-mesh renderers
+  glowed. So each carving also writes the frame's colour onto its own text and sub-mesh renderers
   as a property block in `LateUpdate` (`RuneGlow.ApplyTo`, keeping vanilla's values in the block)
   and rescans those renderers every `RefreshInterval`.
   It is top-left aligned in a zero-size rect, so the piece origin (the aimed point) is the first
