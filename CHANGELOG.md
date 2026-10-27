@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Rune carvings glow only faintly at dusk and dawn and reach their full ember glow about an hour
+  after sunset.
+
 ## 0.1.0
 
 - First release: the Dvergr cask, a Plains-tier fermenter built from the dvergr barrel prop

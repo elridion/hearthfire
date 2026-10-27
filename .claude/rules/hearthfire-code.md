@@ -66,8 +66,10 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   read by day; `ShaderUtilities.UpdateShaderRatios` runs after these, or TMP leaves too little room
   around each glyph and cuts the strokes and halo. The text is unlit, so `RuneGlow` colours it each frame (first carving's `Update`
   per frame) by the time of day: vanilla's day weight from `EnvMan.GetDayFraction` (0 before
-  sunrise and after sunset, 1 at noon), near-black from `FullDaylight` (mid-morning; earlier faded too fast) on and HDR ember amber with
-  the halo, pulsing slowly, at night; environments with `m_alwaysDark` glow at any hour. Measuring
+  sunrise and after sunset, 1 at noon), near-black from `FullDaylight` (mid-morning; earlier faded too fast) on, only
+  `TwilightShare` of the glow by sunset and from sunrise (faint at dusk and dawn), and HDR ember
+  amber with the halo, pulsing slowly, from `NightFade` (about a game hour) after sunset;
+  environments with `m_alwaysDark` glow at any hour. Measuring
   the live sun and ambient light instead stopped finding night after tabbing out of the game.
   Vertex colour is white with `RuneAlpha`, so the material decides the colour. Local fires don't
   count. The shared material alone was not

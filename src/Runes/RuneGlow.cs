@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Hearthfire
 {
     /// <summary>
-    /// Colours the rune carvings by the time of day: burnt-in black in daylight, a slowly flickering
-    /// ember glow at night and in always-dark places. The rune text is unlit, so it can't darken or
+    /// Colours the rune carvings by the time of day: burnt-in black in daylight, a faint glow at
+    /// dusk and dawn and a slowly flickering ember glow at night and in always-dark places. The rune text is unlit, so it can't darken or
     /// light up by itself. The colour is worked out once per frame and set on the shared material, and
     /// every carving also writes it onto its own renderers as a property block: after tabbing out of
     /// the game, carvings placed earlier stayed black although the shared material kept changing.
@@ -18,6 +18,11 @@ namespace Hearthfire
         // 0.35 (2 hours) made the glow fade too quickly at dawn and dusk. Reading the live sun and
         // ambient light instead stopped finding night after tabbing out of the game.
         private const float FullDaylight = 0.6f;
+        // Share of the night glow reached by sunset (and kept from sunrise), so dusk and dawn glow
+        // only faintly; the rest fades in over NightFade of the day (0.04 is about one game hour)
+        // after sunset and out before sunrise.
+        private const float TwilightShare = 0.3f;
+        private const float NightFade = 0.04f;
 
         // Burnt-in near black by day. The ember colour goes above 1 so the game's bloom haloes it.
         private static readonly Color s_dayColour = new Color(0.09f, 0.06f, 0.04f, 1f);
@@ -79,16 +84,20 @@ namespace Hearthfire
             renderer.SetPropertyBlock(s_block);
         }
 
-        // 0 in daylight, 1 at night and in environments the game keeps dark at any hour (the
-        // Mistlands, dungeons). Local fires and torches don't count.
+        // 0 in daylight, TwilightShare at sunset and sunrise, 1 deeper into the night and in
+        // environments the game keeps dark at any hour (the Mistlands, dungeons). Local fires and
+        // torches don't count.
         private static float Darkness()
         {
             var env = EnvMan.instance;
             if (!env) return 0f;
             var setup = env.GetCurrentEnvironment();
             if (setup != null && setup.m_alwaysDark) return 1f;
-            float daylight = Mathf.Clamp01(1f - Mathf.Abs(env.GetDayFraction() - 0.5f) / 0.25f);
-            return 1f - Mathf.SmoothStep(0f, 1f, daylight / FullDaylight);
+            float fromNoon = Mathf.Abs(env.GetDayFraction() - 0.5f);
+            float daylight = Mathf.Clamp01(1f - fromNoon / 0.25f);
+            float twilight = 1f - Mathf.SmoothStep(0f, 1f, daylight / FullDaylight);
+            float night = Mathf.SmoothStep(0f, 1f, (fromNoon - 0.25f) / NightFade);
+            return TwilightShare * twilight + (1f - TwilightShare) * night;
         }
     }
 }

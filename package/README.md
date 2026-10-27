@@ -8,7 +8,7 @@ Pieces I handpicked for my own homestead because I find them cool, kept close to
 | --- | --- | --- | --- | --- |
 | Dvergr cask | A better fermenter: 30 minutes instead of 40, 8 meads instead of 6, also for other mods' meads | Crafting | Workbench | 30 Fine wood, 5 Black metal, 10 Resin |
 | Stone idol I to XII | Twelve weathered stone idols; Stone idol I's bowl holds whatever you place in it | Decor | Stonecutter | 20 Stone each |
-| Rune carving (horizontal, vertical) | Write on it like a sign; the runes start where you aim, black by day, glowing like embers at night | Furniture | Workbench | 1 Coal each |
+| Rune carving (horizontal, vertical) | Write on it like a sign; the runes start where you aim, black by day, faintly glowing at dusk, glowing like embers at night | Furniture | Workbench | 1 Coal each |
 
 Rune carvings write c as k and e as i, as Viking carvers did; other characters become runes too.
 
