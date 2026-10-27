@@ -36,8 +36,8 @@ namespace Hearthfire
         // s_loopCentre the middle of the big loop's. The piece origin, which placement puts on the
         // aimed underside, is the hang point, so the top of the small loop reaches into the beam
         // as if hung on a nail. The model is 0.75 m long; RopeScale makes it
-        // about 1 m. Half that looked too small next to the vanilla-size core.
-        private const float RopeScale = 1.3f;
+        // about 0.73 m. In game 0.65 looked too small next to the vanilla-size core and 1.3 too big.
+        private const float RopeScale = 0.975f;
         private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.075f, 0f);
         private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
         private const float RopeGlossiness = 0.05f;

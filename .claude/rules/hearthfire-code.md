@@ -53,7 +53,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   set to 0, so it is no fire and needs no fuel. The brazier is iron: `UseWoodSounds` copies the
   `sign`'s `Piece.m_placeEffect` and `WearNTear` material, hit and destroyed effects. The model
   hangs from the origin: the embedded knotted rope (`rope.obj.gz`, small loop up, big loop below)
-  scaled by `RopeScale` (1.3, about 1 m; 0.65 looked too small next to the core) and moved so the small loop's opening (`s_hangPoint`)
+  scaled by `RopeScale` (0.975, about 0.73 m; in game 0.65 looked too small next to the core and 1.3 too big) and moved so the small loop's opening (`s_hangPoint`)
   is the origin: the top of that opening (its middle sank too much of the loop into the beam), so
   the loop's top reaches a little into the beam above, as if hung on a nail, in a `PieceUtils.MakeStandardMaterial` copy of the
   ward stone's material with its maps loaded as Repeat (its UVs run past 0..1). Tried before and
@@ -62,7 +62,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   the big loop sits a copy of `Pickable_SurtlingCoreStand`'s `core` child, stripped to mesh, light
   and `LightFlicker` (`StripToGlow`), at the stand's own size (about 14 cm radius, as in
   the game files; half that was tried and changed back) and centred on `s_loopCentre` (measured in
-  the model, see its README). The loop's opening fits only about 6 cm at this rope size, so the
+  the model, see its README). The loop's opening fits only about 4 cm at this rope size, so the
   loop sinks into the core. The `SurtlingCore` item was used first, but its root
   carries the dropped-item sparkle particles. The core's light gets `s_lightColor`, `LightRange`
   and `LightIntensity`, softer than a torch. One `BoxCollider` around rope and core, cut off at the
