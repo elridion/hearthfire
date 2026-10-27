@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
 
 - New Dvergr crate in the Storage tab (workbench: 10 Wood, 2 Resin): storage built from the dvergr
   crate prop that holds as much as a wood chest. Crates snap to each other corner to corner, so they
