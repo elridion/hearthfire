@@ -1,5 +1,6 @@
 using System.IO;
 using BepInEx;
+using BepInEx.Configuration;
 using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -17,10 +18,23 @@ namespace Hearthfire
 
         private const string TranslationPrefix = "Hearthfire.translations.";
 
+        public static ConfigEntry<float> MinGlow;
+        public static ConfigEntry<float> MaxGlow;
+
         private Harmony _harmony;
 
         private void Awake()
         {
+            MinGlow = Config.Bind("Rune carvings", "MinGlow", 0f,
+                new ConfigDescription("How strongly rune carvings glow at noon, the brightest time, as a fraction of the " +
+                    "ember glow (0 = burnt-in black). The glow changes in a straight line from this to MaxGlow at midnight. " +
+                    "Client-side only.",
+                    new AcceptableValueRange<float>(0f, 1f)));
+            MaxGlow = Config.Bind("Rune carvings", "MaxGlow", 0.8f,
+                new ConfigDescription("How strongly rune carvings glow at midnight, the darkest time, and in always-dark " +
+                    "places, as a fraction of the ember glow (above 1 the game's bloom haloes it). Client-side only.",
+                    new AcceptableValueRange<float>(0f, 2f)));
+
             AddLocalizations();
             PrefabManager.OnVanillaPrefabsAvailable += CaskPiece.Register;
             PrefabManager.OnVanillaPrefabsAvailable += IdolPieces.Register;

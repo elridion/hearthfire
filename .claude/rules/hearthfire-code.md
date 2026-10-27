@@ -67,13 +67,14 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   font material is the runestones' too), with the shader's glow on for a halo when it has
   `_GlowColor`, and `_FaceDilate` at `StrokeDilate` because the font's thin staves were hard to
   read by day; `ShaderUtilities.UpdateShaderRatios` runs after these, or TMP leaves too little room
-  around each glyph and cuts the strokes and halo. The text is unlit, so `RuneGlow` colours it each frame (first carving's `Update`
-  per frame) by the time of day: vanilla's day weight from `EnvMan.GetDayFraction` (0 before
-  sunrise and after sunset, 1 at noon), near-black from `FullDaylight` (mid-morning; earlier faded too fast) on, only
-  `TwilightShare` of the glow by sunset and from sunrise (faint at dusk and dawn), and HDR ember
-  amber with the halo, pulsing slowly, from `NightFade` (about a game hour) after sunset;
-  environments with `m_alwaysDark` glow at any hour. The night ember was 1.6 red with a 0.45 halo,
-  then 1.15 with 0.3, both too bright; it is dimmer now. The face colour is multiplied by a
+  around each glyph and cuts the strokes and halo. The text is unlit, so `RuneGlow` colours it
+  each frame (first carving's `Update` per frame) by the time of day: a glow running in a straight
+  line from the `MinGlow` config setting at noon to `MaxGlow` at midnight, by
+  `EnvMan.GetDayFraction` (environments with `m_alwaysDark` get `MaxGlow` at any hour), with a slow
+  flicker. The glow lerps the face, unclamped, from warm grey (near black was too black) at 0 to
+  ember amber at 1, and scales the halo's alpha. Fades with a window around sunset (smoothstep
+  curves, then a linear ramp) felt uneven, and the night ember was too bright at 1.6, 1.15 and 1.0
+  red, hence `MaxGlow` 0.8. Both settings are client-side and read live. The face colour is multiplied by a
   generated tiling value-noise texture in `_FaceTex` (`RuneGlow.MakeNoise`, skipped on dedicated
   servers), so the glow is patchy; each carving drifts it from its own random offset through
   `_FaceTex_ST` in the same property block. A point light per carving was tried and removed: as

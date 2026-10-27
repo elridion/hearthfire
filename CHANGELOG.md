@@ -2,9 +2,10 @@
 
 ## 0.1.1
 
-- Rune carvings glow only faintly at dusk and dawn and reach their full ember glow about an hour
-  after sunset. The night glow is dimmer than before and patchy like
-  embers, slowly shifting.
+- Rune carvings are grey instead of black, and their ember glow grows in a straight line from noon
+  to midnight instead of switching on around sunset. The night glow is dimmer than before and
+  patchy like embers, slowly shifting.
+- New client-side settings MinGlow and MaxGlow set the glow at noon and at midnight.
 - Rune carvings cost less to draw: carvings out of view are no longer updated every frame.
 - Rune carvings no longer flicker or vanish into the surface they are on when seen at a steep angle.
 
