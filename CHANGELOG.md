@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
 
 - Rune carvings stay black at any hour. In the dark an ember glow rises around the runes instead,
   faint at dusk and dawn and stronger at night, and each carving casts a faint warm light on the
