@@ -46,7 +46,7 @@ namespace Hearthfire
         private static readonly Quaternion s_coreRotation = Quaternion.Euler(192f, 27f, 9f);
         // How far the core sits below the big loop's centre, in metres: centred, it looked to sit
         // too high in the loop.
-        private const float CoreDrop = 0.04f;
+        private const float CoreDrop = 0.08f;
 
         // A soft glow for a corner rather than a torch that lights the room.
         private const float LightRange = 6f;
