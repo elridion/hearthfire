@@ -62,7 +62,8 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   scaled by `RopeScale` (0.975, about 0.73 m; in game 0.65 looked too small next to the core and 1.3 too big) and moved so the small loop's opening (`s_hangPoint`)
   is the origin: the top of that opening (its middle sank too much of the loop into the beam), so
   the loop's top reaches a little into the beam above, as if hung on a nail, in a `PieceUtils.MakeStandardMaterial` copy of the
-  ward stone's material with its maps loaded as Repeat (its UVs run past 0..1). Tried before and
+  ward stone's material with its maps loaded as Repeat (its UVs run past 0..1) and `_Color` set to
+  `s_ropeTint` (60 % grey; the source texture read too bright). Tried before and
   dropped: a stretched Unity cylinder in the leather scraps' material, then `LineRenderer`s with
   the `Cart`'s rope line material (thin, and a net of lines did not read as holding the core). In
   the big loop sits a copy of `Pickable_SurtlingCoreStand`'s `core` child, stripped to mesh, light

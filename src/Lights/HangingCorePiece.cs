@@ -41,6 +41,8 @@ namespace Hearthfire
         private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.075f, 0f);
         private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
         private const float RopeGlossiness = 0.05f;
+        // Multiplies the rope's albedo: its own yellow-brown read too bright next to vanilla pieces.
+        private static readonly Color s_ropeTint = new Color(0.6f, 0.6f, 0.6f);
         // The core hangs upside down, on one of its tips, tilted a little off true and turned, so it
         // looks hung rather than set down.
         private static readonly Quaternion s_coreRotation = Quaternion.Euler(192f, 27f, 9f);
@@ -111,8 +113,9 @@ namespace Hearthfire
             rope.transform.localScale = Vector3.one * RopeScale;
             rope.transform.localPosition = -s_hangPoint * RopeScale;
             rope.AddComponent<MeshFilter>().sharedMesh = ropeMesh;
-            rope.AddComponent<MeshRenderer>().sharedMaterial =
-                PieceUtils.MakeStandardMaterial(materialSource, ropeAlbedo, ropeNormal, "hearthfire_rope", RopeGlossiness);
+            var ropeMaterial = PieceUtils.MakeStandardMaterial(materialSource, ropeAlbedo, ropeNormal, "hearthfire_rope", RopeGlossiness);
+            if (ropeMaterial.HasProperty("_Color")) ropeMaterial.SetColor("_Color", s_ropeTint);
+            rope.AddComponent<MeshRenderer>().sharedMaterial = ropeMaterial;
             AddCore(model.transform, coreSource);
 
             StripFire(prefab, model.transform);

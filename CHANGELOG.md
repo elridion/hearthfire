@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The hanging surtling core's rope is darker.
+
 ## 0.2.0
 
 - New Dvergr crate in the Storage tab (workbench: 10 Corewood, 10 Bronze nails): storage built from
