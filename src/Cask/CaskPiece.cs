@@ -98,7 +98,7 @@ namespace Hearthfire
             // a working (vanilla-looking) fermenter instead of an invisible one.
             var model = Object.Instantiate(PrefabManager.Cache.GetPrefab<GameObject>(BarrelPrefab), prefab.transform, false);
             model.name = "dvergr_barrel";
-            StripToVisual(model);
+            PieceUtils.StripToVisual(model);
             // The prop isn't necessarily stored at the origin; start from zero before measuring.
             model.transform.localPosition = Vector3.zero;
             model.transform.localRotation = Quaternion.identity;
@@ -135,21 +135,6 @@ namespace Hearthfire
             var box = prefab.AddComponent<BoxCollider>();
             box.center = bounds.center;
             box.size = bounds.size;
-        }
-
-        // Removes everything but rendering from an instantiated vanilla prop: its ZNetView,
-        // Destructible and drops would otherwise make it a second networked object.
-        private static void StripToVisual(GameObject root)
-        {
-            for (int pass = 0; pass < 3; pass++)
-            {
-                foreach (var component in root.GetComponentsInChildren<Component>(true))
-                {
-                    if (component is Transform || component is MeshFilter || component is Renderer || component is LODGroup)
-                        continue;
-                    Object.DestroyImmediate(component);
-                }
-            }
         }
 
         private static bool RequirePrefab(string prefabName)

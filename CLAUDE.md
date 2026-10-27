@@ -1,7 +1,8 @@
 # Hearthfire
 
 Valheim mod adding building pieces that look like they shipped with the game: the **Dvergr cask**
-(a fermenter whose model is the vanilla `dvergrprops_barrel` prop) and twelve **stone idols**
+(a fermenter whose model is the vanilla `dvergrprops_barrel` prop), the **Dvergr crate** (a wood chest
+whose model is the vanilla `dvergrprops_crate` prop, for storage outside) and twelve **stone idols**
 (decorative, models from ELargin's "Celtic Pagan Idols"), plus two **rune carvings** written like
 signs (horizontal and vertical). Anything that would look out of place
 next to vanilla builds does not belong here. It grew out of the unreleased Cask mod.
@@ -14,6 +15,7 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
 - Sources are grouped by piece family, all in the one `Hearthfire` namespace;
   `src/HearthfirePlugin.cs` is the plugin.
 - `src/Cask/`: `CaskPiece.cs` the cask, `FermenterPatches.cs` the conversion-list patch.
+- `src/Crate/`: `CratePiece.cs` the crate.
 - `src/Idols/`: `IdolPieces.cs` the idols.
 - `src/Runes/`: `RuneCarvingPieces.cs` registers the rune carvings, `RuneCarving.cs` is their
   component, `RuneFont.cs` the vanilla rune font and the text mapping, `RuneGlow.cs` the day/night
@@ -26,20 +28,22 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
 ## Invariants that must not break
 
 - **Saved-world compatibility.** Persisted or networked identifiers: plugin GUID
-  `elridion.hearthfire`, prefab names `piece_dvergrcask`, `piece_celticidol01`..`12`,
+  `elridion.hearthfire`, prefab names `piece_dvergrcask`, `piece_dvergrcrate`, `piece_celticidol01`..`12`,
   `piece_runecarving` and `piece_runecarving_vertical`, ZDO key `hearthfire_runes`. Fermenting
-  state lives in vanilla ZDO keys through the cloned `Fermenter`. The idol number is part of the
+  state lives in vanilla ZDO keys through the cloned `Fermenter`, crate contents through the cloned
+  `Container`. The idol number is part of the
   prefab name: never renumber the idols.
 - **Rune mapping is saved-world data too.** Carvings store the typed text; `RuneFont.ToRunes`
   keeps letters the vanilla rune font draws, writes c as k and e as i (the font leaves them blank),
   keeps a little punctuation and maps the rest by code point modulo the font's drawn a-z letters.
   Changing that mapping changes every carving in every world.
-- **Vanilla assets are shared.** Never modify the `fermenter`, `dvergrprops_barrel`, `stone_pillar`,
+- **Vanilla assets are shared.** Never modify the `fermenter`, `dvergrprops_barrel`, `piece_chest_wood`,
+  `dvergrprops_crate`, `stone_pillar`,
   `guard_stone` or `sign` prefabs or their materials; edit only the clones and copies.
 - **Docs follow code.** `package/README.md` is a short personal intro and one pieces table (what
   each piece does, hammer tab, station, cost); a new piece adds a row. In the same change the table
   stays in sync with `CaskPiece` (recipe, `FermentationDuration`, `CaskYield`) and
-  `FermenterPatches`, `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
+  `FermenterPatches`, `CratePiece` (recipe; capacity is the wood chest's), `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
   `RuneCarving` (recipe, the c/e mapping, glow), and the idol names with
   `assets/translations/English.json`. Keep it terse; details belong in the code rules.
 

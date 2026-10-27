@@ -9,12 +9,12 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
 
 ## Structure
 
-- One class per piece family (`CaskPiece`, `IdolPieces`, `RuneCarvingPieces`), each with a static
+- One class per piece family (`CaskPiece`, `CratePiece`, `IdolPieces`, `RuneCarvingPieces`), each with a static
   `Register` hooked to `PrefabManager.OnVanillaPrefabsAvailable` in `HearthfirePlugin.Awake`. Each
-  family has its own folder under `src/` (`Cask/`, `Idols/`, `Runes/`) with its components and
+  family has its own folder under `src/` (`Cask/`, `Crate/`, `Idols/`, `Runes/`) with its components and
   patches; a new family gets one too. Helpers more than one family needs go in `src/Common/`
   (`PieceUtils`). Folders don't add namespaces: everything stays in `Hearthfire`.
-- Localization keys: `piece_dvergrcask*`, `piece_celticidol01`..`12` (the idols share
+- Localization keys: `piece_dvergrcask*`, `piece_dvergrcrate*`, `piece_celticidol01`..`12` (the idols share
   `piece_celticidol_description`), `piece_runecarving`, `piece_runecarving_vertical` and
   `piece_runecarving_description`. The text box reuses vanilla `$piece_sign_input`.
 
@@ -35,6 +35,13 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   fermenter's live `m_conversion` in `ZNetScene`, each conversion copied with `CaskYield`. The copy
   is shared by all casks and rebuilt when the fermenter's list changes; the fermenter's own list
   and conversions are never touched. The patch runs for every vanilla fermenter too.
+- `CratePiece` clones `piece_chest_wood`, so it keeps the chest's `Container` (its size and ZDO
+  contents), wood `WearNTear`, workbench and open/close effects; only `m_name` changes. It sits in
+  the Furniture category without a Usage tag, like the rune carvings (10 Wood, 2 Resin). Its model
+  is `dvergrprops_crate` swapped in like the cask's barrel (`PieceUtils.StripToVisual`, standing on
+  the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`). The chest's lid
+  objects stay as empty transforms for `Container` to toggle. Eight inactive `snappoint` children
+  on the box corners (direct children: `Piece` reads only those) let crates stack corner to corner.
 - `IdolPieces` clones `stone_pillar` (stone `WearNTear`, stonecutter, destruction effects), sits in
   the Furniture category with only the `PieceUsages.Decor` tag (the hammer's Decor tab), strips its
   model, colliders and snap points, and adds the idol mesh (in metres, base on the origin). Its
@@ -122,6 +129,7 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
 ## Failure handling
 
 A missing `fermenter` or `dvergrprops_barrel` skips the cask; a barrel without meshes keeps the
-fermenter's model; a failed icon render keeps the fermenter's icon; a missing `stone_pillar` or
+fermenter's model; a failed icon render keeps the fermenter's icon. The crate does the same with
+`piece_chest_wood` and `dvergrprops_crate`. A missing `stone_pillar` or
 `guard_stone` skips the idols, and an idol whose model or albedo fails to load is skipped alone.
 A missing `sign` or rune font skips both rune carvings; dedicated servers get no icons.

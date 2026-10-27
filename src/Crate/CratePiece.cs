@@ -1,0 +1,133 @@
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Managers;
+using UnityEngine;
+
+namespace Hearthfire
+{
+    /// <summary>
+    /// Builds and registers the dvergr crate: a clone of the vanilla wood chest whose model is
+    /// swapped for the dvergr crate prop, for storage that looks at home outside. The clone keeps
+    /// the chest's Container (and so its size), wood WearNTear and open/close effects. Snap points on
+    /// the box's corners let crates be stacked and lined up.
+    /// </summary>
+    internal static class CratePiece
+    {
+        public const string PrefabName = "piece_dvergrcrate";
+        public const string HoverName = "$" + PrefabName;
+        private const string ChestPrefab = "piece_chest_wood";
+        private const string CratePrefab = "dvergrprops_crate";
+
+        public static void Register()
+        {
+            PrefabManager.OnVanillaPrefabsAvailable -= Register;
+
+            if (!RequirePrefab(ChestPrefab) || !RequirePrefab(CratePrefab)) return;
+            try
+            {
+                Build();
+            }
+            catch (System.Exception e)
+            {
+                Jotunn.Logger.LogError($"Failed to build {PrefabName}: {e}");
+            }
+        }
+
+        private static RequirementConfig Req(string item, int amount) => new RequirementConfig(item, amount, 0, true);
+
+        private static void Build()
+        {
+            // The wood chest's 10 Wood, plus resin for the pitch and pegs that hold the planks. The
+            // crafting station (workbench) stays the cloned chest's.
+            var config = new PieceConfig
+            {
+                Name = HoverName,
+                Description = HoverName + "_description",
+                PieceTable = PieceTables.Hammer,
+                Category = PieceCategories.Furniture,
+                Requirements = new[] { Req("Wood", 10), Req("Resin", 2) },
+            };
+            var piece = new CustomPiece(PrefabName, ChestPrefab, config);
+            var prefab = piece.PiecePrefab;
+
+            var container = prefab.GetComponent<Container>();
+            if (!container)
+            {
+                Jotunn.Logger.LogWarning($"'{ChestPrefab}' has no Container; skipping {PrefabName}.");
+                return;
+            }
+            container.m_name = HoverName;
+
+            ReplaceModel(prefab);
+
+            var icon = PieceUtils.RenderIcon(prefab);
+            if (icon) prefab.GetComponent<Piece>().m_icon = icon;
+
+            PieceManager.Instance.AddPiece(piece);
+        }
+
+        // Swaps the chest's meshes for the dvergr crate at its own size, standing on the piece
+        // origin. The chest's lid objects stay as empty transforms, so Container can still toggle them.
+        private static void ReplaceModel(GameObject prefab)
+        {
+            // Build and fit the model before stripping the chest, so a failure here leaves a working
+            // (vanilla-looking) chest instead of an invisible one.
+            var model = Object.Instantiate(PrefabManager.Cache.GetPrefab<GameObject>(CratePrefab), prefab.transform, false);
+            model.name = "dvergr_crate";
+            PieceUtils.StripToVisual(model);
+            // The prop isn't necessarily stored at the origin; start from zero before measuring.
+            model.transform.localPosition = Vector3.zero;
+            model.transform.localRotation = Quaternion.identity;
+            var raw = PieceUtils.MeshBounds(model.transform, prefab.transform);
+            if (raw.size.y <= 0f)
+            {
+                Jotunn.Logger.LogWarning($"'{CratePrefab}' has no mesh; keeping the vanilla chest model.");
+                Object.DestroyImmediate(model);
+                return;
+            }
+            model.transform.localPosition = new Vector3(-raw.center.x, -raw.min.y, -raw.center.z);
+            var bounds = PieceUtils.MeshBounds(model.transform, prefab.transform);
+
+            PieceUtils.StripModel(prefab, model.transform);
+            foreach (var t in prefab.GetComponentsInChildren<Transform>(true))
+                if (t && t != prefab.transform && t.CompareTag("snappoint")) Object.DestroyImmediate(t.gameObject);
+
+            // Lights in Valheim cull by layer; the piece layer also makes the model hoverable and
+            // lets the build hammer target it.
+            foreach (var t in model.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
+
+            // Placement only snaps to convex colliders; a box around the crate is enough to place,
+            // hover, hit, support and stack it.
+            var box = prefab.AddComponent<BoxCollider>();
+            box.center = bounds.center;
+            box.size = bounds.size;
+
+            AddSnapPoints(prefab, bounds);
+        }
+
+        // One snap point on each corner of the box, top and bottom, so a crate snaps onto, beside
+        // and under another one corner to corner. Piece only reads snap points from direct children.
+        private static void AddSnapPoints(GameObject prefab, Bounds bounds)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                var point = new GameObject("snappoint");
+                point.tag = "snappoint";
+                point.transform.SetParent(prefab.transform, false);
+                point.transform.localPosition = new Vector3(
+                    (i & 1) == 0 ? bounds.min.x : bounds.max.x,
+                    (i & 2) == 0 ? bounds.min.y : bounds.max.y,
+                    (i & 4) == 0 ? bounds.min.z : bounds.max.z);
+                // Vanilla keeps its snap points inactive; they are only ever read as positions.
+                point.SetActive(false);
+            }
+        }
+
+        private static bool RequirePrefab(string prefabName)
+        {
+            if (PrefabManager.Cache.GetPrefab<GameObject>(prefabName)) return true;
+            Jotunn.Logger.LogWarning($"Vanilla prefab '{prefabName}' not found; skipping {PrefabName}.");
+            return false;
+        }
+    }
+}

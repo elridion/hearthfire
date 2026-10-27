@@ -7,6 +7,7 @@ Pieces I handpicked for my own homestead because I find them cool, kept close to
 | Piece | What it does | Tab | Station | Cost |
 | --- | --- | --- | --- | --- |
 | Dvergr cask | A better fermenter: 30 minutes instead of 40, 8 meads instead of 6, also for other mods' meads | Crafting | Workbench | 30 Fine wood, 5 Black metal, 10 Resin |
+| Dvergr crate | Storage that looks at home outside, as much as a wood chest; crates snap corner to corner to stack | Furniture | Workbench | 10 Wood, 2 Resin |
 | Stone idol I to XII | Twelve weathered stone idols; Stone idol I's bowl holds whatever you place in it | Decor | Stonecutter | 20 Stone each |
 | Rune carving (horizontal, vertical) | Write on it like a sign; the runes start where you aim, grey at noon, glowing more like embers towards midnight | Furniture | Workbench | 1 Coal each |
 

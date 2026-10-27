@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- New Dvergr crate in the Furniture tab (workbench: 10 Wood, 2 Resin): storage built from the dvergr
+  crate prop that holds as much as a wood chest. Crates snap to each other corner to corner, so they
+  stack into piles.
+
 ## 0.1.2
 
 - Players on 0.1.x can still play together.

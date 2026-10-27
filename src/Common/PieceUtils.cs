@@ -25,6 +25,21 @@ namespace Hearthfire
             }
         }
 
+        // Removes everything but rendering from an instantiated vanilla prop: its ZNetView,
+        // Destructible and drops would otherwise make it a second networked object.
+        public static void StripToVisual(GameObject root)
+        {
+            for (int pass = 0; pass < 3; pass++)
+            {
+                foreach (var component in root.GetComponentsInChildren<Component>(true))
+                {
+                    if (component is Transform || component is MeshFilter || component is Renderer || component is LODGroup)
+                        continue;
+                    Object.DestroyImmediate(component);
+                }
+            }
+        }
+
         // Combined mesh bounds of everything under root, expressed in space's local coordinates.
         // Meshes for which skip returns true are left out.
         public static Bounds MeshBounds(Transform root, Transform space, System.Func<Transform, bool> skip = null)
