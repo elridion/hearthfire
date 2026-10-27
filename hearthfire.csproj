@@ -48,7 +48,7 @@
   <!-- Thunderstore/Hexium package: dotnet build -c Release -t:Package -->
   <PropertyGroup>
     <PackageDescription>A small set of vanilla-style building pieces to make your homestead your own.</PackageDescription>
-    <PackageWebsite>https://github.com/elridion/hearthfire</PackageWebsite>
+    <PackageWebsite>https://discord.gg/wqUA7vvvp2</PackageWebsite>
     <PackageDependencies>"ValheimModding-Jotunn-2.30.2"</PackageDependencies>
     <PackageStagingDir>$(BaseIntermediateOutputPath)package\</PackageStagingDir>
     <PackageOutputDir>$(MSBuildProjectDirectory)\dist\</PackageOutputDir>
