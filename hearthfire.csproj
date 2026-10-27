@@ -25,6 +25,10 @@
   <ItemGroup>
     <Reference Update="@(Reference)" Private="false" />
     <Reference Include="System.IO.Compression" Private="false" />
+    <!-- TMP_FontAsset.faceInfo, for sizing the rune carvings' text; Jotunn doesn't reference it. -->
+    <Reference Include="UnityEngine.TextCoreFontEngineModule" Private="false">
+      <HintPath>$(VALHEIM_MANAGED)\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <!-- Celtic idols: gzipped OBJ models, albedo JPGs and DXT5nm-layout normal maps, loaded by

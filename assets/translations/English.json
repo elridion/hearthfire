@@ -13,5 +13,8 @@
   "piece_celticidol09": "Stone idol IX",
   "piece_celticidol10": "Stone idol X",
   "piece_celticidol11": "Stone idol XI",
-  "piece_celticidol12": "Stone idol XII"
+  "piece_celticidol12": "Stone idol XII",
+  "piece_runecarving": "Rune carving",
+  "piece_runecarving_vertical": "Rune carving (vertical)",
+  "piece_runecarving_description": "Runes burnt into wood or stone that smoulder like embers after dark. Write on it like a sign; every letter becomes a rune."
 }
