@@ -39,6 +39,3 @@ refunding them, including mead fermenting in a cask.
   used with the author's kind permission, converted and downscaled.
 - Icon: "Viking longhouse" by Delapouite from [game-icons.net](https://game-icons.net),
   [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/), recoloured and outlined.
-
-Bug reports and feedback: the [#hearthfire channel on Discord](https://discord.gg/wqUA7vvvp2).
-Source (MIT): [github.com/elridion/hearthfire](https://github.com/elridion/hearthfire).
