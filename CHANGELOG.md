@@ -3,10 +3,12 @@
 ## 0.2.0
 
 - New Dvergr crate in the Storage tab (workbench: 10 Corewood, 10 Bronze nails): storage built from
-  the dvergr crate prop with 4 x 4 slots, between the wood chest and the reinforced chest. Its lid swings open while someone has it open, like a chest's.
+  the dvergr crate prop with 4 x 4 slots, between the wood chest and the reinforced chest. Its lid
+  swings open while someone has it open, like a chest's.
 - New Hanging surtling core in the Lighting tab (workbench: 1 Surtling core, 2 Leather scraps): a
   core held in a knotted rope that hangs under a beam or roof and glows without fuel. It never goes out,
   but it is not a fire: no warmth, no comfort.
+- Players on 0.1.x cannot play together with 0.2.0; everyone, including the server, needs 0.2.0.
 
 ## 0.1.2
 
