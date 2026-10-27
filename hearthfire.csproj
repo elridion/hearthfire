@@ -27,6 +27,13 @@
     <Reference Include="System.IO.Compression" Private="false" />
   </ItemGroup>
 
+  <!-- Celtic idols: gzipped OBJ models, albedo JPGs and DXT5nm-layout normal maps, loaded by
+       IdolPieces as Hearthfire.<file name>. -->
+  <ItemGroup>
+    <EmbeddedResource Include="assets\models\celtic_idols\*.obj.gz" LogicalName="Hearthfire.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="assets\textures\celtic_idols\*.jpg" LogicalName="Hearthfire.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="assets\textures\celtic_idols\*.png" LogicalName="Hearthfire.%(Filename)%(Extension)" />
+  </ItemGroup>
 
   <!-- Player-facing text, one Jotunn JSON file per Valheim language, loaded by
        HearthfirePlugin.AddLocalizations as Hearthfire.translations.<Language>.json. -->
