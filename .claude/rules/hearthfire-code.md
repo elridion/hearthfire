@@ -55,8 +55,11 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   floated visibly off a wooden pillar. On the 2 m wood beam's right half something writes depth
   just in front of the visible face (its readable mesh is a flat box there, so no lift measured
   from the mesh helps), which hid the runes from the beam's centre on. `RuneCarving.LateUpdate`
-  therefore moves the text `DepthNudge` (3 cm) toward the camera and scales it by the same ratio,
-  so it looks unchanged but wins the depth test; only geometry that close in front draws over it.
+  therefore moves the text toward the camera and scales it by the same ratio, so it looks
+  unchanged but wins the depth test; only geometry that close in front draws over it. The move is
+  `DepthNudge` (3 cm) divided by the cosine of the view angle, capped at `MaxDepthNudge`, so the
+  text always clears the surface by 3 cm: a fixed 3 cm along the line of sight cleared it by
+  almost nothing when seen along a wall, and the runes flickered behind it at those angles.
   A per-rune raycast fit against the meshes was tried and removed: it measured 0 everywhere and
   pulled vertical carvings onto pieces below. Rich text is on only for the `<mspace>` cell tag
   (`RuneCarving.Layout`); `ToRunes` never puts out `<`, so typed text can't open a tag.

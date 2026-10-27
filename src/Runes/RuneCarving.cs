@@ -34,10 +34,14 @@ namespace Hearthfire
         // How much nearer the camera the runes are drawn than they are. Something on some pieces
         // (the 2 m wood beam's right half) writes depth a little in front of the visible face, and
         // hid runes 5 mm off it; the readable mesh is flat there, so no lift measured from it helps.
-        // The text is moved this far toward the camera and shrunk by the same ratio, so it looks
-        // exactly the same from the camera but wins the depth test. Kept small: only geometry this
-        // close in front of the runes is drawn over.
+        // The text is moved toward the camera and shrunk by the same ratio, so it looks exactly the
+        // same from the camera but wins the depth test. DepthNudge is how far that brings it off the
+        // surface. A fixed 3 cm along the line of sight only gave 3 cm times the cosine of the view
+        // angle, so seen along a wall the runes sank back behind it and flickered; the move is
+        // divided by that cosine, up to MaxDepthNudge. Kept small: only geometry this close in front
+        // of the runes is drawn over.
         private const float DepthNudge = 0.03f;
+        private const float MaxDepthNudge = 0.25f;
         // The glow light sits this far in front of the middle of the runes, so it lights the
         // surface around them, and is off beyond LightDistance, where its tint can't be seen.
         public const float LightLift = 0.15f;
@@ -113,8 +117,17 @@ namespace Hearthfire
             }
 
             Vector3 position = transform.TransformPoint(m_textLocalPosition);
-            float distance = Vector3.Distance(position, eye);
-            float ratio = distance > DepthNudge * 2f ? (distance - DepthNudge) / distance : 1f;
+            Vector3 toEye = eye - position;
+            float distance = toEye.magnitude;
+            float ratio = 1f;
+            if (distance > DepthNudge * 2f)
+            {
+                // The surface lies in the piece's XY plane, so its normal is the piece's Z axis.
+                float facing = Mathf.Abs(Vector3.Dot(toEye / distance, transform.forward));
+                float nudge = DepthNudge / Mathf.Max(facing, DepthNudge / MaxDepthNudge);
+                nudge = Mathf.Min(nudge, distance * 0.5f);
+                ratio = (distance - nudge) / distance;
+            }
             var text = m_text.transform;
             text.position = eye + (position - eye) * ratio;
             text.localScale = new Vector3(ratio, ratio, ratio);
