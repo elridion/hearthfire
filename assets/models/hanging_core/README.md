@@ -25,7 +25,7 @@ Converted once in Blender 5.0 with a throwaway script (not kept in the repo), fr
   normals, then gzipped (`rope.obj.gz`). `ObjLoader` mirrors X like for every OBJ.
 - Measured in the exported OBJ's space: the big loop's opening fits a circle of radius 0.0437 m
   centred at (0.0118, -0.5993, -0.0261); the small loop's opening is centred at about
-  (0.005, -0.108, 0), where the piece hangs from; the rope reaches down to y = -0.750. `HangingCorePiece`
+  (0.005, -0.108, 0) and reaches up to y = -0.072; the piece hangs from its top, (0.005, -0.075, 0); the rope reaches down to y = -0.750. `HangingCorePiece`
   holds these values (X mirrored).
 - Albedo (`../../textures/hanging_core/rope_albedo.jpg`): 1024 px PNG downscaled to 256 px, JPEG
   quality 90.

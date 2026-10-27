@@ -31,13 +31,14 @@ namespace Hearthfire
         private static readonly string[] s_buildUsage = { PieceUsages.Lighting };
 
         // Measured in the rope model (see assets/models/hanging_core/README.md, X mirrored like
-        // ObjLoader; the model's origin is the top of its small loop): the small loop's opening is
-        // centred on s_hangPoint and the big loop's on s_loopCentre. The piece origin, which
-        // placement puts on the aimed underside, is the hang point, so the top of the small loop
-        // reaches into the beam as if hung on a nail. The model is 0.75 m long; RopeScale makes it
-        // about 0.5 m.
-        private const float RopeScale = 0.65f;
-        private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.108f, 0f);
+        // ObjLoader; the model's origin is the top of its small loop): s_hangPoint is the top of the
+        // small loop's opening (its middle sank too much of the loop into the beam) and
+        // s_loopCentre the middle of the big loop's. The piece origin, which placement puts on the
+        // aimed underside, is the hang point, so the top of the small loop reaches into the beam
+        // as if hung on a nail. The model is 0.75 m long; RopeScale makes it
+        // about 1 m. Half that looked too small next to the vanilla-size core.
+        private const float RopeScale = 1.3f;
+        private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.075f, 0f);
         private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
         private const float RopeGlossiness = 0.05f;
 
