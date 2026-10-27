@@ -39,9 +39,6 @@ namespace Hearthfire
         private const float RopeScale = 0.65f;
         private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.108f, 0f);
         private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
-        // The core's radius in metres. The big loop's opening fits only about 3 cm at this scale;
-        // a core that small was hard to see, so the core is bigger and clips into the rope a little.
-        private const float CoreRadius = 0.074f;
         private const float RopeGlossiness = 0.05f;
 
         // A soft glow for a corner rather than a torch that lights the room.
@@ -138,8 +135,9 @@ namespace Hearthfire
             PieceManager.Instance.AddPiece(piece);
         }
 
-        // A copy of the core stand's core and its light, CoreRadius big and centred in the rope's
-        // big loop.
+        // A copy of the core stand's core and its light, centred in the rope's big loop. It keeps
+        // the size it has on the stand (about 14 cm radius), far wider than the loop's opening, so
+        // the rope's loop sinks into it.
         private static void AddCore(Transform parent, Transform source)
         {
             var core = Object.Instantiate(source.gameObject, parent, false);
@@ -150,11 +148,8 @@ namespace Hearthfire
             StripToGlow(core);
 
             var raw = PieceUtils.MeshBounds(core.transform, parent);
-            float radius = Mathf.Max(raw.extents.x, raw.extents.y, raw.extents.z);
-            if (radius > 0f) core.transform.localScale *= CoreRadius / radius;
-            var sized = PieceUtils.MeshBounds(core.transform, parent);
             var centre = (s_loopCentre - s_hangPoint) * RopeScale;
-            core.transform.localPosition = centre - sized.center;
+            core.transform.localPosition = centre - raw.center;
 
             // Keep the stand's light, so the flicker on it still flickers it.
             var lights = core.GetComponentsInChildren<Light>(true);

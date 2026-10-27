@@ -59,10 +59,10 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   dropped: a stretched Unity cylinder in the leather scraps' material, then `LineRenderer`s with
   the `Cart`'s rope line material (thin, and a net of lines did not read as holding the core). In
   the big loop sits a copy of `Pickable_SurtlingCoreStand`'s `core` child, stripped to mesh, light
-  and `LightFlicker` (`StripToGlow`), scaled to `CoreRadius` (7.4 cm, about half the vanilla
-  core's 14 cm) and centred on `s_loopCentre` (measured in the model, see its README). At this
-  rope size the loop's opening fits only about 3 cm, so the core clips into the rope a little; a
-  vanilla-size core would be wider than the whole rope. The `SurtlingCore` item was used first, but its root
+  and `LightFlicker` (`StripToGlow`), at the stand's own size (about 14 cm radius, as in
+  the game files; half that was tried and changed back) and centred on `s_loopCentre` (measured in
+  the model, see its README). The loop's opening fits only about 3 cm at this rope size, so the
+  loop sinks into the core. The `SurtlingCore` item was used first, but its root
   carries the dropped-item sparkle particles. The core's light gets `s_lightColor`, `LightRange`
   and `LightIntensity`, softer than a torch. One `BoxCollider` around rope and core, cut off at the
   origin, so placement puts the hang point on the aimed underside.
