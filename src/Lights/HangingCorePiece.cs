@@ -41,6 +41,9 @@ namespace Hearthfire
         private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.075f, 0f);
         private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
         private const float RopeGlossiness = 0.05f;
+        // The core hangs upside down, on one of its tips, tilted a little off true and turned, so it
+        // looks hung rather than set down.
+        private static readonly Quaternion s_coreRotation = Quaternion.Euler(192f, 27f, 9f);
 
         // A soft glow for a corner rather than a torch that lights the room.
         private const float LightRange = 6f;
@@ -145,7 +148,7 @@ namespace Hearthfire
             core.name = "core";
             core.transform.localScale = source.lossyScale;
             core.transform.localPosition = Vector3.zero;
-            core.transform.localRotation = Quaternion.identity;
+            core.transform.localRotation = s_coreRotation;
             StripToGlow(core);
 
             var raw = PieceUtils.MeshBounds(core.transform, parent);
