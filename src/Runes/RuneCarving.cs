@@ -68,6 +68,8 @@ namespace Hearthfire
         // sub-meshes when it builds the text, after Show, so the list is rescanned now and then.
         private MeshRenderer[] m_renderers = new MeshRenderer[0];
         private float m_nextRendererScan;
+        // Where this carving's ember noise starts, so neighbouring carvings glow differently.
+        private Vector2 m_noiseOffset;
 
         private void Awake()
         {
@@ -75,6 +77,7 @@ namespace Hearthfire
             m_piece = GetComponent<Piece>();
             m_collider = GetComponent<BoxCollider>();
             if (m_text) m_textLocalPosition = m_text.transform.localPosition;
+            m_noiseOffset = new Vector2(Random.value, Random.value);
         }
 
         // TextMeshPro measures text only once its own Awake has run, so the first layout waits for Start.
@@ -101,7 +104,7 @@ namespace Hearthfire
                 m_nextRendererScan = Time.time + RefreshInterval;
                 m_renderers = m_text.GetComponentsInChildren<MeshRenderer>(true);
             }
-            foreach (var renderer in m_renderers) RuneGlow.ApplyTo(renderer);
+            foreach (var renderer in m_renderers) RuneGlow.ApplyTo(renderer, m_noiseOffset);
 
             var camera = Camera.main;
             if (!camera) return;

@@ -73,9 +73,14 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   `TwilightShare` of the glow by sunset and from sunrise (faint at dusk and dawn), and HDR ember
   amber with the halo, pulsing slowly, from `NightFade` (about a game hour) after sunset;
   environments with `m_alwaysDark` glow at any hour. The night ember was 1.6 red with a 0.45 halo,
-  too bright; it is now softer. The same darkness and flicker drive a shadowless point light per
-  carving (`glow light` child, `LightLift` in front of the slab's middle, moved when the slab is
-  refit, off by day and beyond `LightDistance`). Measuring
+  then 1.15 with 0.3, both too bright; it is dimmer now. The face colour is multiplied by a
+  generated tiling value-noise texture in `_FaceTex` (`RuneGlow.MakeNoise`, skipped on dedicated
+  servers), so the glow is patchy; each carving drifts it from its own random offset through
+  `_FaceTex_ST` in the same property block. The same darkness and flicker drive a shadowless
+  point light per carving (`glow light` child, `LightLift` in front of the slab's middle, moved
+  when the slab is refit, off by day and beyond `LightDistance`). It is `ForcePixel`: as a faint Auto
+  light it showed nothing in game, most likely because it was drawn per vertex and a wall's few
+  big quads have no vertices in its range. Measuring
   the live sun and ambient light instead stopped finding night after tabbing out of the game.
   Vertex colour is white with `RuneAlpha`, so the material decides the colour. Local fires don't
   count. The shared material alone was not

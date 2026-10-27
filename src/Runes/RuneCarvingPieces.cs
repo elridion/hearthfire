@@ -156,6 +156,9 @@ namespace Hearthfire
             light.range = RuneGlow.LightRange;
             light.intensity = 0f;
             light.shadows = LightShadows.None;
+            // As a faint Auto light it showed nothing in game: most likely drawn per vertex, and a
+            // wall's few big quads have no vertices within its range. Per pixel it lights the wall.
+            light.renderMode = LightRenderMode.ForcePixel;
             light.enabled = false;
             return light;
         }
