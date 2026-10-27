@@ -1,0 +1,20 @@
+{
+  "piece_dvergrcask": "Dvergský sud",
+  "piece_dvergrcask_description": "V železom okutom dvergskom sude medovina zreje a kvasí kratší čas a vznikne jej viac, so všetkými zamýšľanými vlastnosťami.",
+  "piece_celticidol_description": "Ošľahaná modla vytesaná z kameňa zabudnutými rukami.",
+  "piece_celticidol01": "Kamenná modla I",
+  "piece_celticidol02": "Kamenná modla II",
+  "piece_celticidol03": "Kamenná modla III",
+  "piece_celticidol04": "Kamenná modla IV",
+  "piece_celticidol05": "Kamenná modla V",
+  "piece_celticidol06": "Kamenná modla VI",
+  "piece_celticidol07": "Kamenná modla VII",
+  "piece_celticidol08": "Kamenná modla VIII",
+  "piece_celticidol09": "Kamenná modla IX",
+  "piece_celticidol10": "Kamenná modla X",
+  "piece_celticidol11": "Kamenná modla XI",
+  "piece_celticidol12": "Kamenná modla XII",
+  "piece_runecarving": "Runová rezba",
+  "piece_runecarving_vertical": "Runová rezba (zvislá)",
+  "piece_runecarving_description": "Runy vypálené do dreva či kameňa, ktoré po zotmení tlejú ako žeravé uhlíky. Píš na ňu ako na ceduľu; z každého písmena sa stane runa."
+}
