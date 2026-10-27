@@ -47,7 +47,8 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   `PieceUtils.KeepFirstLod` keeps only LOD 0. No snap points: crates snapping to each other felt
   wrong in game; the box collider still lets them stand on each other.
 - `HangingCorePiece` clones `piece_brazierceiling01` for its hanging placement and support from
-  above, `PieceUsages.Lighting` (1 Surtling core, 2 Leather scraps). `StripFire` removes the
+  above, `PieceUsages.Lighting` (1 Surtling core, 2 Leather scraps), with
+  `CraftingStations.Workbench` set explicitly (the clone otherwise keeps the brazier's station). `StripFire` removes the
   brazier's `Fireplace`, `EffectArea` (heat, fire, player base), `Aoe`, smoke, lights, particles,
   sounds and trigger colliders, then `StripModel` its meshes, colliders and snap points; comfort is
   set to 0, so it is no fire and needs no fuel. The brazier is iron: `UseWoodSounds` copies the

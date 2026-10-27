@@ -89,7 +89,8 @@ namespace Hearthfire
             }
             var ropeNormal = PieceUtils.LoadEmbeddedTexture(RopeNormal, true, TextureWrapMode.Repeat);
 
-            // The crafting station (workbench) stays the cloned brazier's.
+            // The workbench, set explicitly: the cloned brazier is a metal piece and would keep its
+            // own station.
             var config = new PieceConfig
             {
                 Name = HoverName,
@@ -97,6 +98,7 @@ namespace Hearthfire
                 PieceTable = PieceTables.Hammer,
                 Category = PieceCategories.Furniture,
                 Usage = s_buildUsage,
+                CraftingStation = CraftingStations.Workbench,
                 Requirements = new[] { Req("SurtlingCore", 1), Req("LeatherScraps", 2) },
             };
             var piece = new CustomPiece(PrefabName, BrazierPrefab, config);
