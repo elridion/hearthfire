@@ -30,15 +30,18 @@ namespace Hearthfire
 
         private static readonly string[] s_buildUsage = { PieceUsages.Lighting };
 
-        // The rope model hangs from the origin (the top of its small loop), which placement puts on
-        // the aimed underside. Measured in the model (see assets/models/hanging_core/README.md,
-        // X mirrored like ObjLoader): the big loop's opening fits a circle of LoopRadius around
-        // LoopCentre. The model is 0.75 m long; RopeScale makes it about 1 m.
-        private const float RopeScale = 1.3f;
+        // Measured in the rope model (see assets/models/hanging_core/README.md, X mirrored like
+        // ObjLoader; the model's origin is the top of its small loop): the small loop's opening is
+        // centred on s_hangPoint and the big loop's on s_loopCentre. The piece origin, which
+        // placement puts on the aimed underside, is the hang point, so the top of the small loop
+        // reaches into the beam as if hung on a nail. The model is 0.75 m long; RopeScale makes it
+        // about 0.5 m.
+        private const float RopeScale = 0.65f;
+        private static readonly Vector3 s_hangPoint = new Vector3(-0.005f, -0.108f, 0f);
         private static readonly Vector3 s_loopCentre = new Vector3(-0.0118f, -0.5993f, -0.0261f);
-        private const float LoopRadius = 0.0437f;
-        // The core is a little wider than the opening, so the loop presses on it and holds it.
-        private const float CoreFit = 1.3f;
+        // The core's radius in metres. The big loop's opening fits only about 3 cm at this scale;
+        // a core that small was hard to see, so the core is bigger and clips into the rope a little.
+        private const float CoreRadius = 0.074f;
         private const float RopeGlossiness = 0.05f;
 
         // A soft glow for a corner rather than a torch that lights the room.
@@ -100,6 +103,7 @@ namespace Hearthfire
             var rope = new GameObject("rope");
             rope.transform.SetParent(model.transform, false);
             rope.transform.localScale = Vector3.one * RopeScale;
+            rope.transform.localPosition = -s_hangPoint * RopeScale;
             rope.AddComponent<MeshFilter>().sharedMesh = ropeMesh;
             rope.AddComponent<MeshRenderer>().sharedMaterial =
                 PieceUtils.MakeStandardMaterial(materialSource, ropeAlbedo, ropeNormal, "hearthfire_rope", RopeGlossiness);
@@ -119,12 +123,14 @@ namespace Hearthfire
             // lets the build hammer target it.
             foreach (var t in model.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
 
-            // Placement only snaps to convex colliders. The box's top is the small loop's top at
-            // the origin, so it sits against the underside it hangs from and takes support from it.
+            // Placement only snaps to convex colliders and pushes the collider's closest point onto
+            // the aimed surface, so the box stops at the hang point (the origin) and the part of
+            // the small loop above it goes into the beam. Touching the underside, it takes support
+            // from it.
             var bounds = PieceUtils.MeshBounds(model.transform, prefab.transform);
             var box = prefab.AddComponent<BoxCollider>();
-            box.center = bounds.center;
-            box.size = bounds.size;
+            box.center = new Vector3(bounds.center.x, bounds.min.y / 2f, bounds.center.z);
+            box.size = new Vector3(bounds.size.x, -bounds.min.y, bounds.size.z);
 
             var icon = PieceUtils.RenderIcon(prefab);
             if (icon) pieceComponent.m_icon = icon;
@@ -132,8 +138,8 @@ namespace Hearthfire
             PieceManager.Instance.AddPiece(piece);
         }
 
-        // A copy of the core stand's core and its light, sized to sit in the rope's big loop and
-        // centred on it.
+        // A copy of the core stand's core and its light, CoreRadius big and centred in the rope's
+        // big loop.
         private static void AddCore(Transform parent, Transform source)
         {
             var core = Object.Instantiate(source.gameObject, parent, false);
@@ -145,9 +151,10 @@ namespace Hearthfire
 
             var raw = PieceUtils.MeshBounds(core.transform, parent);
             float radius = Mathf.Max(raw.extents.x, raw.extents.y, raw.extents.z);
-            if (radius > 0f) core.transform.localScale *= LoopRadius * RopeScale * CoreFit / radius;
+            if (radius > 0f) core.transform.localScale *= CoreRadius / radius;
             var sized = PieceUtils.MeshBounds(core.transform, parent);
-            core.transform.localPosition = s_loopCentre * RopeScale - sized.center;
+            var centre = (s_loopCentre - s_hangPoint) * RopeScale;
+            core.transform.localPosition = centre - sized.center;
 
             // Keep the stand's light, so the flicker on it still flickers it.
             var lights = core.GetComponentsInChildren<Light>(true);
@@ -161,7 +168,7 @@ namespace Hearthfire
             {
                 var go = new GameObject("light");
                 go.transform.SetParent(parent, false);
-                go.transform.localPosition = s_loopCentre * RopeScale;
+                go.transform.localPosition = centre;
                 light = go.AddComponent<Light>();
             }
             light.type = LightType.Point;
