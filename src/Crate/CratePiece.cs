@@ -8,8 +8,8 @@ namespace Hearthfire
     /// <summary>
     /// Builds and registers the dvergr crate: a clone of the vanilla wood chest whose model is
     /// swapped for the dvergr crate prop, for storage that looks at home outside. The clone keeps
-    /// the chest's Container (and so its size), wood WearNTear and open/close effects. Snap points on
-    /// the box's corners let crates be stacked and lined up.
+    /// the chest's Container (and so its size), wood WearNTear and open/close effects. Only the
+    /// crate's most detailed LOD is kept, so the icon draws one crate rather than two overlapping.
     /// </summary>
     internal static class CratePiece
     {
@@ -80,6 +80,7 @@ namespace Hearthfire
             var model = Object.Instantiate(PrefabManager.Cache.GetPrefab<GameObject>(CratePrefab), prefab.transform, false);
             model.name = "dvergr_crate";
             PieceUtils.StripToVisual(model);
+            PieceUtils.KeepFirstLod(model);
             // The prop isn't necessarily stored at the origin; start from zero before measuring.
             model.transform.localPosition = Vector3.zero;
             model.transform.localRotation = Quaternion.identity;
@@ -94,6 +95,7 @@ namespace Hearthfire
             var bounds = PieceUtils.MeshBounds(model.transform, prefab.transform);
 
             PieceUtils.StripModel(prefab, model.transform);
+            // Crates are placed freely; snapping them to each other felt wrong in game.
             foreach (var t in prefab.GetComponentsInChildren<Transform>(true))
                 if (t && t != prefab.transform && t.CompareTag("snappoint")) Object.DestroyImmediate(t.gameObject);
 
@@ -102,30 +104,10 @@ namespace Hearthfire
             foreach (var t in model.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
 
             // Placement only snaps to convex colliders; a box around the crate is enough to place,
-            // hover, hit, support and stack it.
+            // hover, hit and support it, and to stack crates on top of each other.
             var box = prefab.AddComponent<BoxCollider>();
             box.center = bounds.center;
             box.size = bounds.size;
-
-            AddSnapPoints(prefab, bounds);
-        }
-
-        // One snap point on each corner of the box, top and bottom, so a crate snaps onto, beside
-        // and under another one corner to corner. Piece only reads snap points from direct children.
-        private static void AddSnapPoints(GameObject prefab, Bounds bounds)
-        {
-            for (int i = 0; i < 8; i++)
-            {
-                var point = new GameObject("snappoint");
-                point.tag = "snappoint";
-                point.transform.SetParent(prefab.transform, false);
-                point.transform.localPosition = new Vector3(
-                    (i & 1) == 0 ? bounds.min.x : bounds.max.x,
-                    (i & 2) == 0 ? bounds.min.y : bounds.max.y,
-                    (i & 4) == 0 ? bounds.min.z : bounds.max.z);
-                // Vanilla keeps its snap points inactive; they are only ever read as positions.
-                point.SetActive(false);
-            }
         }
 
         private static bool RequirePrefab(string prefabName)

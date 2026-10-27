@@ -3,7 +3,7 @@
 Valheim mod adding building pieces that look like they shipped with the game: the **Dvergr cask**
 (a fermenter whose model is the vanilla `dvergrprops_barrel` prop), the **Dvergr crate** (a wood chest
 whose model is the vanilla `dvergrprops_crate` prop, for storage outside), the **hanging surtling
-core** (a fuel-free light hung on a cord, built on the hanging brazier) and twelve **stone idols**
+core** (a fuel-free light hung on a rope, built on the hanging brazier) and twelve **stone idols**
 (decorative, models from ELargin's "Celtic Pagan Idols"), plus two **rune carvings** written like
 signs (horizontal and vertical). Anything that would look out of place
 next to vanilla builds does not belong here. It grew out of the unreleased Cask mod.
@@ -41,7 +41,7 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
   keeps a little punctuation and maps the rest by code point modulo the font's drawn a-z letters.
   Changing that mapping changes every carving in every world.
 - **Vanilla assets are shared.** Never modify the `fermenter`, `dvergrprops_barrel`, `piece_chest_wood`,
-  `dvergrprops_crate`, `piece_brazierceiling01`, `SurtlingCore`, `LeatherScraps`, `stone_pillar`,
+  `dvergrprops_crate`, `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`, `Cart`, `stone_pillar`,
   `guard_stone` or `sign` prefabs or their materials; edit only the clones and copies.
 - **Docs follow code.** `package/README.md` is a short personal intro and one pieces table (what
   each piece does, hammer tab, station, cost); a new piece adds a row. In the same change the table

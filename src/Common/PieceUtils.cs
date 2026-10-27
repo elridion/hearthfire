@@ -40,6 +40,32 @@ namespace Hearthfire
             }
         }
 
+        // Keeps only the most detailed level of each LOD group under root and removes the groups.
+        // Jotunn's icon renderer drops LOD groups, so every level would draw on top of each other
+        // and fight over the same surfaces.
+        public static void KeepFirstLod(GameObject root)
+        {
+            foreach (var group in root.GetComponentsInChildren<LODGroup>(true))
+            {
+                var lods = group.GetLODs();
+                if (lods.Length > 1)
+                {
+                    var keep = new System.Collections.Generic.HashSet<Renderer>(lods[0].renderers);
+                    for (int i = 1; i < lods.Length; i++)
+                    {
+                        foreach (var renderer in lods[i].renderers)
+                        {
+                            if (!renderer || keep.Contains(renderer)) continue;
+                            var filter = renderer.GetComponent<MeshFilter>();
+                            Object.DestroyImmediate(renderer);
+                            if (filter) Object.DestroyImmediate(filter);
+                        }
+                    }
+                }
+                Object.DestroyImmediate(group);
+            }
+        }
+
         // Combined mesh bounds of everything under root, expressed in space's local coordinates.
         // Meshes for which skip returns true are left out.
         public static Bounds MeshBounds(Transform root, Transform space, System.Func<Transform, bool> skip = null)

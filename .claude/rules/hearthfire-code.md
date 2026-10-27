@@ -41,18 +41,24 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   `PieceUsages.Storage` tag puts it in the hammer's Storage tab (10 Wood, 2 Resin). Its model
   is `dvergrprops_crate` swapped in like the cask's barrel (`PieceUtils.StripToVisual`, standing on
   the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`). The chest's lid
-  objects stay as empty transforms for `Container` to toggle. Eight inactive `snappoint` children
-  on the box corners (direct children: `Piece` reads only those) let crates stack corner to corner.
+  objects stay as empty transforms for `Container` to toggle. The prop's high and low LODs overlap
+  exactly, and Jotunn's icon render drops LOD groups, so both drew and the icon looked broken:
+  `PieceUtils.KeepFirstLod` keeps only LOD 0. No snap points: crates snapping to each other felt
+  wrong in game; the box collider still lets them stand on each other.
 - `HangingCorePiece` clones `piece_brazierceiling01` for its hanging placement and support from
   above, `PieceUsages.Lighting` (1 Surtling core, 2 Leather scraps). `StripFire` removes the
-  brazier's `Fireplace`, `EffectArea` (heat, fire, player base), smoke, lights, particles and
-  sounds, then `StripModel` its meshes, colliders and snap points; comfort is set to 0, so it is
-  no fire and needs no fuel. The model hangs from the origin: a `CordLength` Unity cylinder in the
-  `LeatherScraps` item's material, then the `SurtlingCore` item prefab stripped to renderers,
-  lights, `LightFlicker` and particles (`StripToGlow`) with its top at the cord's end. Its first
-  light (or a new one in the core's middle) gets `s_lightColor`, `LightRange` and
-  `LightIntensity`, softer than a torch. One `BoxCollider` whose top is the origin, so placement
-  puts the cord's top on the aimed underside.
+  brazier's `Fireplace`, `EffectArea` (heat, fire, player base), `Aoe`, smoke, lights, particles,
+  sounds and trigger colliders, then `StripModel` its meshes, colliders and snap points; comfort is
+  set to 0, so it is no fire and needs no fuel. The brazier is iron: `UseWoodSounds` copies the
+  `sign`'s `Piece.m_placeEffect` and `WearNTear` material, hit and destroyed effects. The model
+  hangs from the origin: a `RopeLength` `LineRenderer` with the `Cart`'s rope line material and
+  texture mode (vanilla's only rope; a stretched Unity cylinder in the leather scraps' material
+  looked bad), then a copy of `Pickable_SurtlingCoreStand`'s `core` child at its world scale,
+  stripped to mesh, light and `LightFlicker` (`StripToGlow`), top at the rope's end. The
+  `SurtlingCore` item was used first, but its root carries the dropped-item sparkle particles.
+  The core's light gets `s_lightColor`, `LightRange` and `LightIntensity`, softer than a torch.
+  One `BoxCollider` from the origin to the core's bottom, so placement puts the rope's top on the
+  aimed underside.
 - `IdolPieces` clones `stone_pillar` (stone `WearNTear`, stonecutter, destruction effects), sits in
   the Furniture category with only the `PieceUsages.Decor` tag (the hammer's Decor tab), strips its
   model, colliders and snap points, and adds the idol mesh (in metres, base on the origin). Its
@@ -141,7 +147,8 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
 
 A missing `fermenter` or `dvergrprops_barrel` skips the cask; a barrel without meshes keeps the
 fermenter's model; a failed icon render keeps the fermenter's icon. The crate does the same with
-`piece_chest_wood` and `dvergrprops_crate`. A missing `piece_brazierceiling01`, `SurtlingCore` or
-`LeatherScraps` (or a core without meshes, or scraps without a material) skips the hanging core. A missing `stone_pillar` or
+`piece_chest_wood` and `dvergrprops_crate`. A missing `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`,
+`Cart` or `sign` (or a stand without a `core` mesh, or a cart without a rope line) skips the
+hanging core. A missing `stone_pillar` or
 `guard_stone` skips the idols, and an idol whose model or albedo fails to load is skipped alone.
 A missing `sign` or rune font skips both rune carvings; dedicated servers get no icons.
