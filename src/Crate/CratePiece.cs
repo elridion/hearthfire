@@ -22,9 +22,10 @@ namespace Hearthfire
         // the cloned chest carries.
         private static readonly string[] s_buildUsage = { PieceUsages.Storage };
 
-        // Slots: a square grid for a square crate, one slot fewer than the wood chest's 5 x 2.
-        private const int InventoryWidth = 3;
-        private const int InventoryHeight = 3;
+        // Slots: a square grid for a square crate. With its bronze-age recipe it sits between the
+        // wood chest's 5 x 2 and the iron reinforced chest's 6 x 4.
+        private const int InventoryWidth = 4;
+        private const int InventoryHeight = 4;
 
         // How far the open lid swings up and back about its back edge, in degrees; past upright,
         // so it leans back instead of standing on its edge.
@@ -49,8 +50,9 @@ namespace Hearthfire
 
         private static void Build()
         {
-            // The wood chest's 10 Wood, plus resin for the pitch and pegs that hold the planks. The
-            // crafting station (workbench) stays the cloned chest's.
+            // Core wood and bronze nails put it in the bronze age, a step past the wood chest and
+            // before the reinforced chest's iron. The crafting station (workbench) stays the cloned
+            // chest's.
             var config = new PieceConfig
             {
                 Name = HoverName,
@@ -58,7 +60,7 @@ namespace Hearthfire
                 PieceTable = PieceTables.Hammer,
                 Category = PieceCategories.Furniture,
                 Usage = s_buildUsage,
-                Requirements = new[] { Req("Wood", 10), Req("Resin", 2) },
+                Requirements = new[] { Req("RoundLog", 10), Req("BronzeNails", 10) },
             };
             var piece = new CustomPiece(PrefabName, ChestPrefab, config);
             var prefab = piece.PiecePrefab;

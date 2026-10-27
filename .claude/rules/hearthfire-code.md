@@ -38,8 +38,10 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   and conversions are never touched. The patch runs for every vanilla fermenter too.
 - `CratePiece` clones `piece_chest_wood`, so it keeps the chest's `Container` (ZDO contents),
   wood `WearNTear`, workbench and open/close effects; `m_name` changes and the grid becomes
-  `InventoryWidth` x `InventoryHeight` (3 x 3, a square for a square crate). The
-  `PieceUsages.Storage` tag puts it in the hammer's Storage tab (10 Wood, 2 Resin). Its model
+  `InventoryWidth` x `InventoryHeight` (4 x 4, a square for a square crate). The
+  `PieceUsages.Storage` tag puts it in the hammer's Storage tab (10 Corewood, 10 Bronze nails: a
+  bronze-age step between the wood chest's 5 x 2 and the iron reinforced chest's 6 x 4; 3 x 3 for
+  10 Wood and 2 Resin cost more than the wood chest and held less). Its model
   is `dvergrprops_crate` swapped in like the cask's barrel (`PieceUtils.StripToVisual`, standing on
   the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`); the prop's
   inactive worn, broken and destruction children are removed, since they only widened the bounds.
