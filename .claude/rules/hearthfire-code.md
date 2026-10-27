@@ -41,8 +41,11 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   `InventoryWidth` x `InventoryHeight` (3 x 3, a square for a square crate). The
   `PieceUsages.Storage` tag puts it in the hammer's Storage tab (10 Wood, 2 Resin). Its model
   is `dvergrprops_crate` swapped in like the cask's barrel (`PieceUtils.StripToVisual`, standing on
-  the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`). The chest's lid
-  objects stay as empty transforms for `Container` to toggle. The prop's high and low LODs overlap
+  the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`); the prop's
+  inactive worn, broken and destruction children are removed, since they only widened the bounds.
+  `AddOpenLid` takes the crate's highest mesh, its lid, as `Container.m_closed`; `m_open` is a copy
+  under a hinge on the lid's back top edge (-Z, where the wood chest's open lid sits too), swung up
+  and back by `LidOpenAngle` (110°) and inactive. `Container` swaps them while in use. The prop's high and low LODs overlap
   exactly, and Jotunn's icon render drops LOD groups, so both drew and the icon looked broken:
   `PieceUtils.KeepFirstLod` keeps only LOD 0. No snap points: crates snapping to each other felt
   wrong in game; the box collider still lets them stand on each other.

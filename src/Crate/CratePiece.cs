@@ -26,6 +26,10 @@ namespace Hearthfire
         private const int InventoryWidth = 3;
         private const int InventoryHeight = 3;
 
+        // How far the open lid swings up and back about its back edge, in degrees; past upright,
+        // so it leans back instead of standing on its edge.
+        private const float LidOpenAngle = 110f;
+
         public static void Register()
         {
             PrefabManager.OnVanillaPrefabsAvailable -= Register;
@@ -69,7 +73,7 @@ namespace Hearthfire
             container.m_width = InventoryWidth;
             container.m_height = InventoryHeight;
 
-            ReplaceModel(prefab);
+            ReplaceModel(prefab, container);
 
             var icon = PieceUtils.RenderIcon(prefab);
             if (icon) prefab.GetComponent<Piece>().m_icon = icon;
@@ -78,8 +82,8 @@ namespace Hearthfire
         }
 
         // Swaps the chest's meshes for the dvergr crate at its own size, standing on the piece
-        // origin. The chest's lid objects stay as empty transforms, so Container can still toggle them.
-        private static void ReplaceModel(GameObject prefab)
+        // origin, and gives Container the crate's lid to open (see AddOpenLid).
+        private static void ReplaceModel(GameObject prefab, Container container)
         {
             // Build and fit the model before stripping the chest, so a failure here leaves a working
             // (vanilla-looking) chest instead of an invisible one.
@@ -87,6 +91,10 @@ namespace Hearthfire
             model.name = "dvergr_crate";
             PieceUtils.StripToVisual(model);
             PieceUtils.KeepFirstLod(model);
+            // The prop's inactive worn, broken and destruction models belonged to its Destructible;
+            // nothing shows them on the piece, and they would widen the measured bounds.
+            foreach (Transform child in model.transform)
+                if (!child.gameObject.activeSelf) Object.DestroyImmediate(child.gameObject);
             // The prop isn't necessarily stored at the origin; start from zero before measuring.
             model.transform.localPosition = Vector3.zero;
             model.transform.localRotation = Quaternion.identity;
@@ -114,6 +122,45 @@ namespace Hearthfire
             var box = prefab.AddComponent<BoxCollider>();
             box.center = bounds.center;
             box.size = bounds.size;
+
+            AddOpenLid(prefab, model, container);
+        }
+
+        // Vanilla chests swap two lid objects while open: Container shows m_open and hides
+        // m_closed. The crate's own lid (its highest mesh) becomes the closed one; a copy hinged on
+        // the lid's back top edge and swung up and back by LidOpenAngle becomes the open one, like
+        // the wood chest's lid, which also opens to the back (-Z). Built after the collider, so the
+        // open lid does not widen it.
+        private static void AddOpenLid(GameObject prefab, GameObject model, Container container)
+        {
+            Renderer lid = null;
+            Bounds lidBounds = default;
+            foreach (var renderer in model.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                var b = PieceUtils.MeshBounds(renderer.transform, prefab.transform);
+                if (lid && b.min.y <= lidBounds.min.y) continue;
+                lid = renderer;
+                lidBounds = b;
+            }
+            if (!lid || lid.transform == model.transform)
+            {
+                Jotunn.Logger.LogWarning($"'{CratePrefab}' has no separate lid; {PrefabName} opens without moving it.");
+                return;
+            }
+
+            var hinge = new GameObject("lid_open");
+            hinge.transform.SetParent(prefab.transform, false);
+            hinge.transform.localPosition = new Vector3(lidBounds.center.x, lidBounds.max.y, lidBounds.min.z);
+            // The prefab sits at the world origin while it is built, so world and prefab space agree.
+            var open = Object.Instantiate(lid.gameObject, lid.transform.position, lid.transform.rotation);
+            open.transform.localScale = lid.transform.lossyScale;
+            open.transform.SetParent(hinge.transform, true);
+            hinge.transform.localRotation = Quaternion.Euler(-LidOpenAngle, 0f, 0f);
+            foreach (var t in hinge.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
+            hinge.SetActive(false);
+
+            container.m_open = hinge;
+            container.m_closed = lid.gameObject;
         }
 
         private static bool RequirePrefab(string prefabName)
