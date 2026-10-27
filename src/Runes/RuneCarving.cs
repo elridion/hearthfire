@@ -5,8 +5,8 @@ namespace Hearthfire
 {
     /// <summary>
     /// Runes carved onto whatever surface the piece sits on. Players write it like a vanilla sign;
-    /// the text is saved in the ZDO and shown in the vanilla rune font of the runestones, black by
-    /// day and glowing like embers in the dark (<see cref="RuneGlow"/>). The collider is resized with the text and
+    /// the text is saved in the ZDO and shown in the vanilla rune font of the runestones, black with
+    /// an ember halo and a faint light in the dark (<see cref="RuneGlow"/>). The collider is resized with the text and
     /// keeps its back face on the surface, where placement put it.
     /// </summary>
     public class RuneCarving : MonoBehaviour, Hoverable, Interactable, TextReceiver
@@ -22,7 +22,7 @@ namespace Hearthfire
         // Line height of the runes in metres; the font size and the slab follow it. 0.22 was too small
         // to read from a few steps away, 0.33 a little too large.
         public const float LineHeight = 0.3f;
-        // The colour follows the light (RuneGlow); the alpha lets the surface grain show through.
+        // The material sets the colour (RuneGlow); the alpha lets the surface grain show through.
         public const byte RuneAlpha = 225;
         // Every rune sits centred in a cell this many ems wide, and a space takes one cell. The font's
         // own advances barely follow the runes (a thin stave gets 0.32 em, a narrow wynn 0.99 em), so
@@ -38,6 +38,12 @@ namespace Hearthfire
         // exactly the same from the camera but wins the depth test. Kept small: only geometry this
         // close in front of the runes is drawn over.
         private const float DepthNudge = 0.03f;
+        // The glow light sits this far in front of the middle of the runes, so it lights the
+        // surface around them, and is off beyond LightDistance, where its tint can't be seen.
+        public const float LightLift = 0.15f;
+        private const float LightDistance = 40f;
+        // Below this intensity the light is switched off rather than drawn invisibly.
+        private const float MinLightIntensity = 0.01f;
 
         private static readonly int s_textKey = "hearthfire_runes".GetStableHashCode();
         private static readonly bool s_headless = SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null;
@@ -46,6 +52,7 @@ namespace Hearthfire
         // vertical one a single column read top to bottom.
         public bool m_vertical;
         public TextMeshPro m_text;
+        public Light m_light;
 
         private ZNetView m_nview;
         private Piece m_piece;
@@ -96,6 +103,15 @@ namespace Hearthfire
             if (!camera) return;
 
             Vector3 eye = camera.transform.position;
+            if (m_light)
+            {
+                float intensity = RuneGlow.LightIntensity;
+                bool lit = intensity >= MinLightIntensity
+                    && (m_light.transform.position - eye).sqrMagnitude < LightDistance * LightDistance;
+                if (lit) m_light.intensity = intensity;
+                if (m_light.enabled != lit) m_light.enabled = lit;
+            }
+
             Vector3 position = transform.TransformPoint(m_textLocalPosition);
             float distance = Vector3.Distance(position, eye);
             float ratio = distance > DepthNudge * 2f ? (distance - DepthNudge) / distance : 1f;
@@ -132,8 +148,12 @@ namespace Hearthfire
                 size = new Vector2(Mathf.Max(size.x, LineHeight), Mathf.Max(size.y, LineHeight));
                 m_collider.size = new Vector3(size.x, size.y, Thickness);
                 m_collider.center = SlabCenter(size);
+                if (m_light) m_light.transform.localPosition = LightPosition(m_collider.center);
             }
         }
+
+        // In front of the middle of the slab, whose centre is given.
+        public static Vector3 LightPosition(Vector3 slabCenter) => new Vector3(slabCenter.x, slabCenter.y, -LightLift);
 
         // The runes start at the piece origin, the point aimed at while placing, and run right and
         // down from it, so a carving lines up with an edge or another carving by where it starts.
