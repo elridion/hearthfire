@@ -5,7 +5,8 @@ namespace Hearthfire
 {
     /// <summary>
     /// Colours the rune carvings by the time of day: burnt-in black in daylight, a faint glow at
-    /// dusk and dawn and a slowly flickering ember glow at night and in always-dark places. The rune text is unlit, so it can't darken or
+    /// dusk and dawn and a slowly flickering ember glow, with a faint light on the surface around
+    /// each carving, at night and in always-dark places. The rune text is unlit, so it can't darken or
     /// light up by itself. The colour is worked out once per frame and set on the shared material, and
     /// every carving also writes it onto its own renderers as a property block: after tabbing out of
     /// the game, carvings placed earlier stayed black although the shared material kept changing.
@@ -24,16 +25,23 @@ namespace Hearthfire
         private const float TwilightShare = 0.3f;
         private const float NightFade = 0.04f;
 
-        // Burnt-in near black by day. The ember colour goes above 1 so the game's bloom haloes it.
+        // Burnt-in near black by day. The ember colour goes a little above 1 so the game's bloom
+        // haloes it softly; 1.6 red was too bright at night.
         private static readonly Color s_dayColour = new Color(0.09f, 0.06f, 0.04f, 1f);
-        private static readonly Color s_emberColour = new Color(1.6f, 0.55f, 0.12f, 1f);
+        private static readonly Color s_emberColour = new Color(1.15f, 0.4f, 0.09f, 1f);
 
         // Soft halo from the font shader's glow, faded in with the dark. Glow distances are in
-        // distance-field units and must stay inside the atlas padding.
-        private static readonly Color s_haloColour = new Color(1f, 0.45f, 0.1f, 0.45f);
+        // distance-field units and must stay inside the atlas padding. 0.45 alpha was too strong.
+        private static readonly Color s_haloColour = new Color(1f, 0.45f, 0.1f, 0.3f);
         public const float GlowOuter = 0.25f;
         public const float GlowInner = 0.05f;
         public const float GlowPower = 0.75f;
+
+        // Faint warm point light on each carving, faded in with the dark like the runes. No
+        // shadows and a small range: it only tints the surface around the runes.
+        public static readonly Color LightColour = new Color(1f, 0.5f, 0.2f, 1f);
+        public const float LightRange = 1.5f;
+        private const float NightLightIntensity = 0.4f;
 
         // Slow ember pulse: brightness wanders between 1 - FlickerDepth and 1.
         private const float FlickerDepth = 0.2f;
@@ -45,6 +53,9 @@ namespace Hearthfire
         private static Color s_face = s_dayColour;
         private static Color s_halo;
         private static readonly MaterialPropertyBlock s_block = new MaterialPropertyBlock();
+
+        // This frame's intensity for every carving's light; 0 by day.
+        public static float LightIntensity { get; private set; }
 
         // The carvings' own copy of the font material; the font's is the runestones' too.
         public static void Use(Material material, bool hasHalo)
@@ -71,6 +82,7 @@ namespace Hearthfire
             s_halo.a *= dark * flicker;
             s_material.SetColor(ShaderUtilities.ID_FaceColor, s_face);
             if (s_hasHalo) s_material.SetColor(ShaderUtilities.ID_GlowColor, s_halo);
+            LightIntensity = NightLightIntensity * dark * flicker;
         }
 
         // Puts this frame's colour on one carving's renderer. Other values in its property block

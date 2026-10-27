@@ -3,7 +3,8 @@
 ## 0.1.1
 
 - Rune carvings glow only faintly at dusk and dawn and reach their full ember glow about an hour
-  after sunset.
+  after sunset. The night glow is softer than before, and each carving now casts a faint warm
+  light on the surface around it.
 
 ## 0.1.0
 

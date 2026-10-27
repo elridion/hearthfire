@@ -101,6 +101,7 @@ namespace Hearthfire
             var carving = prefab.AddComponent<RuneCarving>();
             carving.m_vertical = vertical;
             carving.m_text = text;
+            carving.m_light = MakeLight(prefab, RuneCarving.LightPosition(box.center));
 
             var icon = MakeIcon(vertical);
             if (icon) prefab.GetComponent<Piece>().m_icon = icon;
@@ -139,6 +140,24 @@ namespace Hearthfire
             var renderer = go.GetComponent<MeshRenderer>();
             if (renderer) renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             return text;
+        }
+
+        // The faint glow light, off until RuneGlow gives it an intensity in the dark. No shadows:
+        // it only tints the surface right around the runes.
+        private static Light MakeLight(GameObject prefab, Vector3 position)
+        {
+            var go = new GameObject("glow light");
+            go.transform.SetParent(prefab.transform, false);
+            go.transform.localPosition = position;
+
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = RuneGlow.LightColour;
+            light.range = RuneGlow.LightRange;
+            light.intensity = 0f;
+            light.shadows = LightShadows.None;
+            light.enabled = false;
+            return light;
         }
 
         // A copy of the font's material, shared by both carvings and coloured by RuneGlow. The font's
