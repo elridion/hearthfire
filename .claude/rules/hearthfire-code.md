@@ -36,8 +36,9 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   fermenter's live `m_conversion` in `ZNetScene`, each conversion copied with `CaskYield`. The copy
   is shared by all casks and rebuilt when the fermenter's list changes; the fermenter's own list
   and conversions are never touched. The patch runs for every vanilla fermenter too.
-- `CratePiece` clones `piece_chest_wood`, so it keeps the chest's `Container` (its size and ZDO
-  contents), wood `WearNTear`, workbench and open/close effects; only `m_name` changes. The
+- `CratePiece` clones `piece_chest_wood`, so it keeps the chest's `Container` (ZDO contents),
+  wood `WearNTear`, workbench and open/close effects; `m_name` changes and the grid becomes
+  `InventoryWidth` x `InventoryHeight` (3 x 3, a square for a square crate). The
   `PieceUsages.Storage` tag puts it in the hammer's Storage tab (10 Wood, 2 Resin). Its model
   is `dvergrprops_crate` swapped in like the cask's barrel (`PieceUtils.StripToVisual`, standing on
   the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`). The chest's lid

@@ -46,7 +46,7 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
 - **Docs follow code.** `package/README.md` is a short personal intro and one pieces table (what
   each piece does, hammer tab, station, cost); a new piece adds a row. In the same change the table
   stays in sync with `CaskPiece` (recipe, `FermentationDuration`, `CaskYield`) and
-  `FermenterPatches`, `CratePiece` (recipe; capacity is the wood chest's), `HangingCorePiece` (recipe, no warmth or comfort), `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
+  `FermenterPatches`, `CratePiece` (recipe, `InventoryWidth` x `InventoryHeight`), `HangingCorePiece` (recipe, no warmth or comfort), `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
   `RuneCarving` (recipe, the c/e mapping, glow), and the idol names with
   `assets/translations/English.json`. Keep it terse; details belong in the code rules.
 

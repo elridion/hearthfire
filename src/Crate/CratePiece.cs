@@ -8,7 +8,7 @@ namespace Hearthfire
     /// <summary>
     /// Builds and registers the dvergr crate: a clone of the vanilla wood chest whose model is
     /// swapped for the dvergr crate prop, for storage that looks at home outside. The clone keeps
-    /// the chest's Container (and so its size), wood WearNTear and open/close effects. Only the
+    /// the chest's Container (resized to a square grid), wood WearNTear and open/close effects. Only the
     /// crate's most detailed LOD is kept, so the icon draws one crate rather than two overlapping.
     /// </summary>
     internal static class CratePiece
@@ -21,6 +21,10 @@ namespace Hearthfire
         // Hammer tab. Like the cask, the Usage tag decides it; without one the crate keeps whatever
         // the cloned chest carries.
         private static readonly string[] s_buildUsage = { PieceUsages.Storage };
+
+        // Slots: a square grid for a square crate, one slot fewer than the wood chest's 5 x 2.
+        private const int InventoryWidth = 3;
+        private const int InventoryHeight = 3;
 
         public static void Register()
         {
@@ -62,6 +66,8 @@ namespace Hearthfire
                 return;
             }
             container.m_name = HoverName;
+            container.m_width = InventoryWidth;
+            container.m_height = InventoryHeight;
 
             ReplaceModel(prefab);
 
