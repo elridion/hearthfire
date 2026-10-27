@@ -52,9 +52,11 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   sounds and trigger colliders, then `StripModel` its meshes, colliders and snap points; comfort is
   set to 0, so it is no fire and needs no fuel. The brazier is iron: `UseWoodSounds` copies the
   `sign`'s `Piece.m_placeEffect` and `WearNTear` material, hit and destroyed effects. The model
-  hangs from the origin: a `RopeLength` `LineRenderer` with the `Cart`'s rope line material and
-  texture mode (vanilla's only rope; a stretched Unity cylinder in the leather scraps' material
-  looked bad), then a copy of `Pickable_SurtlingCoreStand`'s `core` child at its world scale,
+  hangs from the origin: `LineRenderer`s with the `Cart`'s rope line material and texture mode
+  (vanilla's only rope; a stretched Unity cylinder in the leather scraps' material looked bad): a
+  `RopeWidth` line down to the core's top and a net around the core, `StrandCount` top-to-bottom
+  strands and a ring at its middle on a sphere `NetGap` times the core's radius. A thin single
+  line ending on the core's top did not read as holding it. Below the rope hangs a copy of `Pickable_SurtlingCoreStand`'s `core` child at its world scale,
   stripped to mesh, light and `LightFlicker` (`StripToGlow`), top at the rope's end. The
   `SurtlingCore` item was used first, but its root carries the dropped-item sparkle particles.
   The core's light gets `s_lightColor`, `LightRange` and `LightIntensity`, softer than a torch.

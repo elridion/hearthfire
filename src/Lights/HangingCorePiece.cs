@@ -27,9 +27,17 @@ namespace Hearthfire
 
         private static readonly string[] s_buildUsage = { PieceUsages.Lighting };
 
-        // The rope hangs from the piece origin, which placement puts on the aimed underside.
+        // The rope hangs from the piece origin, which placement puts on the aimed underside. A
+        // single line ending on the core's top did not read as holding it, so the rope ends in a
+        // net: strands from top to bottom around the core and a ring around its middle.
         private const float RopeLength = 0.5f;
-        private const float RopeWidth = 0.025f;
+        private const float RopeWidth = 0.045f;
+        private const float StrandWidth = 0.028f;
+        private const int StrandCount = 4;
+        private const int StrandSegments = 12;
+        private const int RingSegments = 16;
+        // How far the net sits outside the core, as a factor of the core's radius.
+        private const float NetGap = 1.05f;
 
         // A soft glow for a corner rather than a torch that lights the room.
         private const float LightRange = 6f;
@@ -85,8 +93,8 @@ namespace Hearthfire
 
             var model = new GameObject("hanging_core");
             model.transform.SetParent(prefab.transform, false);
-            AddRope(model.transform, rope);
             var coreBounds = AddCore(model.transform, coreSource);
+            AddRope(model.transform, rope, coreBounds);
 
             StripFire(prefab, model.transform);
             PieceUtils.StripModel(prefab, model.transform);
@@ -115,24 +123,56 @@ namespace Hearthfire
             PieceManager.Instance.AddPiece(piece);
         }
 
-        // A straight line from the origin down, drawn like the cart's rope with its material and
-        // texture mode.
-        private static void AddRope(Transform parent, LineRenderer source)
+        // A straight line from the origin down to the core's top, then the net around the core,
+        // all drawn like the cart's rope with its material and texture mode.
+        private static void AddRope(Transform parent, LineRenderer source, Bounds core)
         {
-            var go = new GameObject("rope");
+            var center = core.center;
+            float radius = Mathf.Max(core.extents.x, core.extents.y, core.extents.z) * NetGap;
+            var top = center + Vector3.up * radius;
+
+            AddLine(parent, source, "rope", RopeWidth, false, Vector3.zero, top);
+
+            for (int s = 0; s < StrandCount; s++)
+            {
+                float around = s * Mathf.PI * 2f / StrandCount;
+                var points = new Vector3[StrandSegments + 1];
+                for (int i = 0; i <= StrandSegments; i++)
+                {
+                    float down = Mathf.PI * i / StrandSegments;
+                    points[i] = center + new Vector3(Mathf.Sin(down) * Mathf.Cos(around), Mathf.Cos(down),
+                        Mathf.Sin(down) * Mathf.Sin(around)) * radius;
+                }
+                AddLine(parent, source, "strand", StrandWidth, false, points);
+            }
+
+            var ring = new Vector3[RingSegments];
+            for (int i = 0; i < RingSegments; i++)
+            {
+                float around = i * Mathf.PI * 2f / RingSegments;
+                ring[i] = center + new Vector3(Mathf.Cos(around), 0f, Mathf.Sin(around)) * radius;
+            }
+            AddLine(parent, source, "ring", StrandWidth, true, ring);
+        }
+
+        private static void AddLine(Transform parent, LineRenderer source, string name, float width, bool loop,
+            params Vector3[] points)
+        {
+            var go = new GameObject(name);
             go.transform.SetParent(parent, false);
             var line = go.AddComponent<LineRenderer>();
             line.sharedMaterial = source.sharedMaterial;
             line.textureMode = source.textureMode;
             line.alignment = source.alignment;
             line.numCapVertices = source.numCapVertices;
+            line.numCornerVertices = 2;
             line.shadowCastingMode = source.shadowCastingMode;
             line.receiveShadows = source.receiveShadows;
             line.useWorldSpace = false;
-            line.widthMultiplier = RopeWidth;
-            line.positionCount = 2;
-            line.SetPosition(0, Vector3.zero);
-            line.SetPosition(1, new Vector3(0f, -RopeLength, 0f));
+            line.loop = loop;
+            line.widthMultiplier = width;
+            line.positionCount = points.Length;
+            line.SetPositions(points);
         }
 
         // A copy of the core stand's core and its light, hung with its top at the rope's end.
