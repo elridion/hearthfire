@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+- Players on 0.1.x can still play together.
+
 ## 0.1.1
 
 - Rune carvings are grey instead of black, and their ember glow grows in a straight line from noon
