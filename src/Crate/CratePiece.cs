@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -37,6 +38,10 @@ namespace Hearthfire
         private const float LidShift = 0.15f;
         // Negative turns counter-clockwise seen from above; clockwise looked wrong in game.
         private const float LidTurn = -12f;
+
+        // The prop's contents (the fruit seen through the open lid) read too bright next to the
+        // crate's wood; their material copies are multiplied by this.
+        private static readonly Color s_contentsTint = new Color(0.4f, 0.4f, 0.4f);
 
         public static void Register()
         {
@@ -132,7 +137,39 @@ namespace Hearthfire
             box.center = bounds.center;
             box.size = bounds.size;
 
-            AddOpenLid(prefab, model, container);
+            var lid = AddOpenLid(prefab, model, container);
+            if (lid) DimContents(model, lid);
+        }
+
+        // The crate's own wood and metal are the lid's materials too; any other material in the
+        // model belongs to its contents. Those get darkened copies, the vanilla ones stay shared.
+        private static void DimContents(GameObject model, Renderer lid)
+        {
+            var crateMaterials = new HashSet<Material>(lid.sharedMaterials);
+            var copies = new Dictionary<Material, Material>();
+            foreach (var renderer in model.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer == lid) continue;
+                var materials = renderer.sharedMaterials;
+                var changed = false;
+                for (var i = 0; i < materials.Length; i++)
+                {
+                    var source = materials[i];
+                    if (!source || crateMaterials.Contains(source)) continue;
+                    if (!copies.TryGetValue(source, out var copy))
+                    {
+                        copy = new Material(source) { name = source.name + "_hearthfire" };
+                        if (copy.HasProperty("_Color")) copy.SetColor("_Color", copy.GetColor("_Color") * s_contentsTint);
+                        if (copy.HasProperty("_EmissionColor")) copy.SetColor("_EmissionColor", copy.GetColor("_EmissionColor") * s_contentsTint);
+                        copies[source] = copy;
+                    }
+                    materials[i] = copy;
+                    changed = true;
+                }
+                if (changed) renderer.sharedMaterials = materials;
+            }
+            if (copies.Count == 0)
+                Jotunn.Logger.LogWarning($"'{CratePrefab}' has no contents material apart from its lid's; {PrefabName} keeps their brightness.");
         }
 
         // Vanilla chests swap two lid objects while open: Container shows m_open and hides
@@ -141,7 +178,7 @@ namespace Hearthfire
         // vertical there, shifted by LidShift and lowered onto the back rim becomes the open one.
         // Back is -Z, where the wood chest's open lid sits too, so the back left is +X, -Z seen
         // from the front. Built after the collider, so the open lid does not widen it.
-        private static void AddOpenLid(GameObject prefab, GameObject model, Container container)
+        private static Renderer AddOpenLid(GameObject prefab, GameObject model, Container container)
         {
             Renderer lid = null;
             Bounds lidBounds = default;
@@ -155,7 +192,7 @@ namespace Hearthfire
             if (!lid || lid.transform == model.transform)
             {
                 Jotunn.Logger.LogWarning($"'{CratePrefab}' has no separate lid; {PrefabName} opens without moving it.");
-                return;
+                return null;
             }
 
             var hinge = new GameObject("lid_open");
@@ -178,6 +215,7 @@ namespace Hearthfire
 
             container.m_open = hinge;
             container.m_closed = lid.gameObject;
+            return lid;
         }
 
         private static bool RequirePrefab(string prefabName)

@@ -52,8 +52,10 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   sits too) and lowered by the shift times sin(tip), less `LidClearance` (5 mm), so its underside
   rests on the back rim instead of floating (a 2 cm lift on top of the tip left it hovering). It
   looks pried up and pushed aside rather than hinged (110° fully open looked like a chest; only
-  tipped back was liked but too tidy), and inactive. `Container` swaps them while in use. The
-  prop's high and low LODs overlap
+  tipped back was liked but too tidy), and inactive. `Container` swaps them while in use.
+  Materials the lid doesn't use are the prop's contents (fruit): `DimContents` gives them copies
+  darkened by `s_contentsTint` (40 %; 60 % was still too bright), since they read too bright
+  through the open lid. The prop's high and low LODs overlap
   exactly, and Jotunn's icon render drops LOD groups, so both drew and the icon looked broken:
   `PieceUtils.KeepFirstLod` keeps only LOD 0. No snap points: crates snapping to each other felt
   wrong in game; the box collider still lets them stand on each other.

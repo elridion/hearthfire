@@ -6,6 +6,7 @@
   sloped roofs, instead of off to one side.
 - The Dvergr crate's lid now looks pried up and pushed aside while open: it tips back a little,
   turns and rests askew on the back rim, instead of swinging wide open.
+- The fruit inside the Dvergr crate is less bright.
 
 ## 0.2.1
 
