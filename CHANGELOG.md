@@ -4,6 +4,8 @@
 
 - The hanging surtling core's placement preview now hangs exactly where you aim, also under
   sloped roofs, instead of off to one side.
+- The Dvergr crate's lid now only lifts a little and tips back while open, instead of swinging
+  wide open.
 
 ## 0.2.1
 

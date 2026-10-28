@@ -27,9 +27,11 @@ namespace Hearthfire
         private const int InventoryWidth = 4;
         private const int InventoryHeight = 4;
 
-        // How far the open lid swings up and back about its back edge, in degrees; past upright,
-        // so it leans back instead of standing on its edge.
-        private const float LidOpenAngle = 110f;
+        // The open lid is only ajar, like a nailed lid pried up: lifted LidLift metres and tipped
+        // back LidOpenAngle degrees about its back edge. Swung fully open (110 degrees) it looked
+        // too much like a hinged chest.
+        private const float LidOpenAngle = 20f;
+        private const float LidLift = 0.03f;
 
         public static void Register()
         {
@@ -129,9 +131,9 @@ namespace Hearthfire
         }
 
         // Vanilla chests swap two lid objects while open: Container shows m_open and hides
-        // m_closed. The crate's own lid (its highest mesh) becomes the closed one; a copy hinged on
-        // the lid's back top edge and swung up and back by LidOpenAngle becomes the open one, like
-        // the wood chest's lid, which also opens to the back (-Z). Built after the collider, so the
+        // m_closed. The crate's own lid (its highest mesh) becomes the closed one; a copy lifted by
+        // LidLift and tipped back by LidOpenAngle about the lid's back top edge becomes the open
+        // one. Back is -Z, where the wood chest's open lid sits too. Built after the collider, so the
         // open lid does not widen it.
         private static void AddOpenLid(GameObject prefab, GameObject model, Container container)
         {
@@ -158,6 +160,7 @@ namespace Hearthfire
             open.transform.localScale = lid.transform.lossyScale;
             open.transform.SetParent(hinge.transform, true);
             hinge.transform.localRotation = Quaternion.Euler(-LidOpenAngle, 0f, 0f);
+            hinge.transform.localPosition += Vector3.up * LidLift;
             foreach (var t in hinge.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
             hinge.SetActive(false);
 
