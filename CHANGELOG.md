@@ -1,12 +1,14 @@
 # Changelog
 
-## Unreleased
+## 0.2.2
 
 - The hanging surtling core's placement preview now hangs exactly where you aim, also under
   sloped roofs, instead of off to one side.
 - The Dvergr crate's lid now looks pried up and pushed aside while open: it tips back a little,
   turns and rests askew on the back rim, instead of swinging wide open.
 - The fruit inside the Dvergr crate is less bright.
+- The hanging surtling core's light reaches twice as far.
+- Players on 0.2.0 and 0.2.1 can still play together with 0.2.2.
 
 ## 0.2.1
 

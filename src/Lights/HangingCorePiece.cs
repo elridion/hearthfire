@@ -50,8 +50,9 @@ namespace Hearthfire
         // too high in the loop.
         private const float CoreDrop = 0.08f;
 
-        // A soft glow for a corner rather than a torch that lights the room.
-        private const float LightRange = 6f;
+        // A soft glow rather than a torch. In game 6 m lit too little around the core, and
+        // intensity 1.8 with 12 m was too bright.
+        private const float LightRange = 12f;
         private const float LightIntensity = 1.2f;
         private static readonly Color s_lightColor = new Color(1f, 0.45f, 0.15f);
 
