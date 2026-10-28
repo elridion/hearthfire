@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.2.1
 
 - The hanging surtling core's rope is darker.
+- Players on 0.2.0 can still play together with 0.2.1.
 
 ## 0.2.0
 
