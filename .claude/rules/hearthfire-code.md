@@ -58,7 +58,10 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   through the open lid. The prop's high and low LODs overlap
   exactly, and Jotunn's icon render drops LOD groups, so both drew and the icon looked broken:
   `PieceUtils.KeepFirstLod` keeps only LOD 0. No snap points: crates snapping to each other felt
-  wrong in game; the box collider still lets them stand on each other.
+  wrong in game; the box collider still lets them stand on each other. Vanilla `InventoryGrid`
+  starts out remembering 4 x 4 with no slots and builds slots only when the size changes, so the
+  crate opened first after login showed an empty panel; `InventoryGridPatches` (a prefix on
+  `UpdateGui`) resets the remembered width whenever the slot count is wrong. It runs for every grid.
 - `HangingCorePiece` clones `piece_brazierceiling01` for its hanging placement and support from
   above, `PieceUsages.Lighting` (1 Surtling core, 2 Leather scraps), with
   `CraftingStations.Workbench` set explicitly (the clone otherwise keeps the brazier's station). `StripFire` removes the

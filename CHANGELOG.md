@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Fixed the Dvergr crate sometimes opening with an empty panel and no slots, when it was the first
+  container opened after logging in.
+- Players on 0.2.0 to 0.2.2 can still play together with 0.2.3.
+
 ## 0.2.2
 
 - The hanging surtling core's placement preview now hangs exactly where you aim, also under
