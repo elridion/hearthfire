@@ -46,9 +46,14 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   the origin, chest meshes, colliders and snap points stripped, one `BoxCollider`); the prop's
   inactive worn, broken and destruction children are removed, since they only widened the bounds.
   `AddOpenLid` takes the crate's highest mesh, its lid, as `Container.m_closed`; `m_open` is a copy
-  under a hinge on the lid's back top edge (-Z, where the wood chest's open lid sits too), lifted
-  `LidLift` (3 cm) and tipped back `LidOpenAngle` (20°), so it looks pried up rather than hinged
-  (110° fully open looked like a chest), and inactive. `Container` swaps them while in use. The prop's high and low LODs overlap
+  under a pivot on the lid's back top edge, tipped back `LidTipAngle` (20°), then turned `LidTurn`
+  (-12°, counter-clockwise from above; clockwise looked wrong) about Y, shifted `LidShift` (15 % of
+  its width and depth) toward the back left (+X, -Z; back is -Z, where the wood chest's open lid
+  sits too) and lowered by the shift times sin(tip), less `LidClearance` (5 mm), so its underside
+  rests on the back rim instead of floating (a 2 cm lift on top of the tip left it hovering). It
+  looks pried up and pushed aside rather than hinged (110° fully open looked like a chest; only
+  tipped back was liked but too tidy), and inactive. `Container` swaps them while in use. The
+  prop's high and low LODs overlap
   exactly, and Jotunn's icon render drops LOD groups, so both drew and the icon looked broken:
   `PieceUtils.KeepFirstLod` keeps only LOD 0. No snap points: crates snapping to each other felt
   wrong in game; the box collider still lets them stand on each other.

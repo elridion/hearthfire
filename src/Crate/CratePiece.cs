@@ -27,11 +27,16 @@ namespace Hearthfire
         private const int InventoryWidth = 4;
         private const int InventoryHeight = 4;
 
-        // The open lid is only ajar, like a nailed lid pried up: lifted LidLift metres and tipped
-        // back LidOpenAngle degrees about its back edge. Swung fully open (110 degrees) it looked
-        // too much like a hinged chest.
-        private const float LidOpenAngle = 20f;
-        private const float LidLift = 0.03f;
+        // The open lid looks pried up and pushed aside: tipped back LidTipAngle degrees on its back
+        // edge, turned LidTurn degrees and pushed LidShift of its own width and depth toward the
+        // back left, then lowered onto the crate's back rim (see AddOpenLid), LidClearance above it.
+        // Swung fully open (110 degrees) it looked too much like a hinged chest; only tipped back,
+        // it was liked but too tidy.
+        private const float LidTipAngle = 20f;
+        private const float LidClearance = 0.005f;
+        private const float LidShift = 0.15f;
+        // Negative turns counter-clockwise seen from above; clockwise looked wrong in game.
+        private const float LidTurn = -12f;
 
         public static void Register()
         {
@@ -131,10 +136,11 @@ namespace Hearthfire
         }
 
         // Vanilla chests swap two lid objects while open: Container shows m_open and hides
-        // m_closed. The crate's own lid (its highest mesh) becomes the closed one; a copy lifted by
-        // LidLift and tipped back by LidOpenAngle about the lid's back top edge becomes the open
-        // one. Back is -Z, where the wood chest's open lid sits too. Built after the collider, so the
-        // open lid does not widen it.
+        // m_closed. The crate's own lid (its highest mesh) becomes the closed one; a copy tipped
+        // back by LidTipAngle about the lid's back top edge, then turned by LidTurn about the
+        // vertical there, shifted by LidShift and lowered onto the back rim becomes the open one.
+        // Back is -Z, where the wood chest's open lid sits too, so the back left is +X, -Z seen
+        // from the front. Built after the collider, so the open lid does not widen it.
         private static void AddOpenLid(GameObject prefab, GameObject model, Container container)
         {
             Renderer lid = null;
@@ -159,8 +165,14 @@ namespace Hearthfire
             var open = Object.Instantiate(lid.gameObject, lid.transform.position, lid.transform.rotation);
             open.transform.localScale = lid.transform.lossyScale;
             open.transform.SetParent(hinge.transform, true);
-            hinge.transform.localRotation = Quaternion.Euler(-LidOpenAngle, 0f, 0f);
-            hinge.transform.localPosition += Vector3.up * LidLift;
+            // Euler applies the tip about X before the turn about Y, so the tipped lid is turned.
+            hinge.transform.localRotation = Quaternion.Euler(-LidTipAngle, LidTurn, 0f);
+            // Shifted back, the tipped lid's underside crosses the crate's back rim LidShift of its
+            // depth in from the hinge, already that much times sin(tip) above it; lowering by that
+            // rests it on the rim instead of floating.
+            var shiftBack = lidBounds.size.z * LidShift;
+            var drop = shiftBack * Mathf.Sin(LidTipAngle * Mathf.Deg2Rad) - LidClearance;
+            hinge.transform.localPosition += new Vector3(lidBounds.size.x * LidShift, -drop, -shiftBack);
             foreach (var t in hinge.GetComponentsInChildren<Transform>(true)) t.gameObject.layer = prefab.layer;
             hinge.SetActive(false);
 
