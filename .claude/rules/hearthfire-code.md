@@ -74,7 +74,11 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   loop sinks into the core. The `SurtlingCore` item was used first, but its root
   carries the dropped-item sparkle particles. The core's light gets `s_lightColor`, `LightRange`
   and `LightIntensity`, softer than a torch. One `BoxCollider` around rope and core, cut off at the
-  origin, so placement puts the hang point on the aimed underside.
+  origin, for hover, hits and support. `Piece.m_clipEverything` is on: vanilla placement otherwise
+  lines up the collider point closest to the aimed point with it (after moving the ghost 50 m out
+  along the surface normal), which on sloped undersides was the box's top edge, up to half the
+  core's width off. With the flag the origin goes straight onto the aimed point; only
+  `Player.UpdatePlacementGhost` reads it. The cloned brazier's `m_inCeilingOnly` stays.
 - `IdolPieces` clones `stone_pillar` (stone `WearNTear`, stonecutter, destruction effects), sits in
   the Furniture category with only the `PieceUsages.Decor` tag (the hammer's Decor tab), strips its
   model, colliders and snap points, and adds the idol mesh (in metres, base on the origin). Its

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The hanging surtling core's placement preview now hangs exactly where you aim, also under
+  sloped roofs, instead of off to one side.
+
 ## 0.2.1
 
 - The hanging surtling core's rope is darker.

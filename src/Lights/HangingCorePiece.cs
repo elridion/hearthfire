@@ -126,6 +126,12 @@ namespace Hearthfire
             var pieceComponent = prefab.GetComponent<Piece>();
             pieceComponent.m_comfort = 0;
             pieceComponent.m_comfortGroup = Piece.ComfortGroup.None;
+            // Placement otherwise lines up the collider point closest to the aimed point with it: on
+            // a sloped underside that is the wide box's top edge, so the ghost hung up to half the
+            // core's width away from where it was aimed. With clipEverything the game puts the
+            // origin, the hang point, on the aimed point instead; nothing else reads the flag. The
+            // brazier's m_inCeilingOnly stays, so it still only hangs from undersides.
+            pieceComponent.m_clipEverything = true;
             UseWoodSounds(prefab);
 
             // Lights in Valheim cull by layer; the piece layer also makes the model hoverable and
