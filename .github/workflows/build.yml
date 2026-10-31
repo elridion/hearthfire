@@ -85,10 +85,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          csproj=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' hearthfire.csproj)
+          csproj=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' Hearthfire.csproj)
           plugin=$(sed -n 's:.*PluginVersion = "\(.*\)";.*:\1:p' src/HearthfirePlugin.cs)
           echo "tag=$tag csproj=$csproj plugin=$plugin"
-          [ "$tag" = "$csproj" ] && [ "$tag" = "$plugin" ] || { echo "::error::Tag, hearthfire.csproj and HearthfirePlugin.PluginVersion must match"; exit 1; }
+          [ "$tag" = "$csproj" ] && [ "$tag" = "$plugin" ] || { echo "::error::Tag, Hearthfire.csproj and HearthfirePlugin.PluginVersion must match"; exit 1; }
           grep -q "^## $tag\$" CHANGELOG.md || { echo "::error::CHANGELOG.md has no '## $tag' section"; exit 1; }
 
       - name: Build and package

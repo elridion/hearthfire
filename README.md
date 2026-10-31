@@ -14,8 +14,8 @@ Requires the .NET SDK (8+) and a Valheim install. The build locates Valheim thro
 registry entry; override with `-p:VALHEIM_INSTALL="<path>"`.
 
 ```
-dotnet build -c Release                           # build bin/Release/hearthfire.dll
-dotnet build -c Release -t:Package                # also write dist/hearthfire-<version>.zip
+dotnet build -c Release                           # build bin/Release/Hearthfire.dll
+dotnet build -c Release -t:Package                # also write dist/Hearthfire-<version>.zip
 powershell -File tools/make_icon.ps1              # regenerate package/icon.png
 ```
 
@@ -43,7 +43,7 @@ sign whose board is replaced by text in the vanilla runestone font.
 ## Releases
 
 CI (`.github/workflows/build.yml`) builds the package on every push and pull request. Pushing a
-`vX.Y.Z` tag checks that the tag matches the version in `hearthfire.csproj` and
+`vX.Y.Z` tag checks that the tag matches the version in `Hearthfire.csproj` and
 `src/HearthfirePlugin.cs` and has a `CHANGELOG.md` section, then creates a GitHub release and
 publishes to Hexium.
 

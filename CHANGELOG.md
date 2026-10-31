@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- Players on 0.2.0 to 0.2.3 can still play together with 0.2.4.
+
 ## 0.2.3
 
 - Fixed the Dvergr crate sometimes opening with an empty panel and no slots, when it was the first

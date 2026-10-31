@@ -14,7 +14,7 @@ namespace Hearthfire
     {
         public const string PluginGuid = "elridion.hearthfire";
         public const string PluginName = "Hearthfire";
-        public const string PluginVersion = "0.2.3";
+        public const string PluginVersion = "0.2.4";
 
         private const string TranslationPrefix = "Hearthfire.translations.";
 
