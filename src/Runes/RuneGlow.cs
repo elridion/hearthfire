@@ -31,6 +31,13 @@ namespace Hearthfire
         private const float FlickerDepth = 0.2f;
         private const float FlickerSpeed = 0.6f;
 
+        // The darkness jumps when entering or leaving an always-dark place or when sleeping skips the
+        // night, and the runes popped into their new glow. A change of more than JumpThreshold in one
+        // frame starts a GlowFade-second fade from the shown darkness to the live one. The day's own
+        // drift is far below the threshold even at low frame rates, so it is followed directly.
+        private const float GlowFade = 1f;
+        private const float JumpThreshold = 0.02f;
+
         // Ember noise: a tiling grey texture on the font shader's face texture slot, which it
         // multiplies the face colour by, so the glow is patchy instead of flat. NoiseScale is how
         // much of the texture one glyph covers; it drifts by NoiseDrift per second, and every
@@ -47,6 +54,11 @@ namespace Hearthfire
         private static bool s_hasHalo;
         private static bool s_hasNoise;
         private static int s_lastFrame = -1;
+        private static bool s_hasDark;
+        private static float s_lastDark;
+        private static float s_shownDark;
+        private static float s_fadeFrom;
+        private static float s_fadeEnd = float.MinValue;
         private static Color s_face = s_greyColour;
         private static Color s_halo;
         private static readonly MaterialPropertyBlock s_block = new MaterialPropertyBlock();
@@ -73,7 +85,30 @@ namespace Hearthfire
             if (!s_material || s_lastFrame == Time.frameCount) return;
             s_lastFrame = Time.frameCount;
             float flicker = 1f - FlickerDepth * Mathf.PerlinNoise(Time.time * FlickerSpeed, 0.37f);
-            Apply(Darkness(), flicker);
+            Apply(FadedDarkness(), flicker);
+        }
+
+        // The live darkness, eased over GlowFade after a jump. The first reading is taken as is, so
+        // carvings don't fade in after logging in.
+        private static float FadedDarkness()
+        {
+            float dark = Darkness();
+            if (!s_hasDark)
+            {
+                s_hasDark = true;
+                s_lastDark = dark;
+                s_fadeFrom = dark;
+            }
+            else if (Mathf.Abs(dark - s_lastDark) > JumpThreshold)
+            {
+                s_fadeFrom = s_shownDark;
+                s_fadeEnd = Time.time + GlowFade;
+            }
+            s_lastDark = dark;
+
+            float remaining = s_fadeEnd - Time.time;
+            s_shownDark = remaining > 0f ? Mathf.Lerp(s_fadeFrom, dark, Mathf.SmoothStep(0f, 1f, 1f - remaining / GlowFade)) : dark;
+            return s_shownDark;
         }
 
         // The glow runs from the MinGlow setting at noon to MaxGlow at midnight. Unclamped, so a

@@ -133,7 +133,9 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   each frame (first carving's `Update` per frame) by the time of day: a glow running in a straight
   line from the `MinGlow` config setting at noon to `MaxGlow` at midnight, by
   `EnvMan.GetDayFraction` (environments with `m_alwaysDark` get `MaxGlow` at any hour), with a slow
-  flicker. The glow lerps the face, unclamped, from warm grey (near black was too black) at 0 to
+  flicker. A darkness change above `JumpThreshold` in one frame (entering a dungeon or the
+  Mistlands, sleeping) fades over `GlowFade` (1 s) from the shown value instead of popping
+  (`FadedDarkness`, once per frame for all carvings); the first reading after login is taken as is. The glow lerps the face, unclamped, from warm grey (near black was too black) at 0 to
   ember amber at 1, and scales the halo's alpha. Fades with a window around sunset (smoothstep
   curves, then a linear ramp) felt uneven, and the night ember was too bright at 1.6, 1.15 and 1.0
   red, hence `MaxGlow` 0.8. Both settings are client-side and read live. The face colour is multiplied by a
