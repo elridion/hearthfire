@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- Rune carvings fade into their new glow over a second instead of popping, when you enter or
+  leave a dungeon or the Mistlands, or wake up after sleeping.
+- Players on 0.3.0 can still play together with 0.3.1.
+
 ## 0.3.0
 
 - The hanging surtling core now gives 1 comfort in the lights group, like lanterns and candles.
