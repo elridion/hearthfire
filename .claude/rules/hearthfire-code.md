@@ -66,8 +66,9 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   above, `PieceUsages.Lighting` (1 Surtling core, 2 Leather scraps), with
   `CraftingStations.Workbench` set explicitly (the clone otherwise keeps the brazier's station). `StripFire` removes the
   brazier's `Fireplace`, `EffectArea` (heat, fire, player base), `Aoe`, smoke, lights, particles,
-  sounds and trigger colliders, then `StripModel` its meshes, colliders and snap points; comfort is
-  set to 0, so it is no fire and needs no fuel. The brazier is iron: `UseWoodSounds` copies the
+  sounds and trigger colliders, then `StripModel` its meshes, colliders and snap points; it is no fire
+  and needs no fuel. Its comfort is `Comfort` (1) in `Piece.ComfortGroup.Lantern`, the lights
+  group of vanilla lanterns and candles, instead of the brazier's fire group. The brazier is iron: `UseWoodSounds` copies the
   `sign`'s `Piece.m_placeEffect` and `WearNTear` material, hit and destroyed effects. The model
   hangs from the origin: the embedded knotted rope (`rope.obj.gz`, small loop up, big loop below)
   scaled by `RopeScale` (0.975, about 0.73 m; in game 0.65 looked too small next to the core and 1.3 too big) and moved so the small loop's opening (`s_hangPoint`)
@@ -90,6 +91,12 @@ Adds to the workspace-wide `code-style.md` and `valheim-modding.md` in `../.clau
   along the surface normal), which on sloped undersides was the box's top edge, up to half the
   core's width off. With the flag the origin goes straight onto the aimed point; only
   `Player.UpdatePlacementGhost` reads it. The cloned brazier's `m_inCeilingOnly` stays.
+- `CandleComfort` is not a piece: it sets the vanilla `Candle_resin` prefab's `Piece.m_comfort` to
+  1 in `Piece.ComfortGroup.Lantern`, matching the hanging core, but only while the candle has no
+  comfort of its own (a game update or another mod). It edits the vanilla prefab on purpose, so
+  every candle counts, including ones built before; comfort pieces join their list in
+  `Piece.Awake`, which is why it runs at `OnVanillaPrefabsAvailable`, before any candle spawns.
+  Lights don't stack in vanilla comfort: only the best one nearby counts.
 - `IdolPieces` clones `stone_pillar` (stone `WearNTear`, stonecutter, destruction effects), sits in
   the Furniture category with only the `PieceUsages.Decor` tag (the hammer's Decor tab), strips its
   model, colliders and snap points, and adds the idol mesh (in metres, base on the origin). Its
@@ -182,4 +189,5 @@ fermenter's model; a failed icon render keeps the fermenter's icon. The crate do
 `sign` or `guard_stone` material, a stand without a `core` mesh, or a rope model or albedo that
 fails to load skips the hanging core; a missing rope normal map falls back to a flat one. A missing `stone_pillar` or
 `guard_stone` skips the idols, and an idol whose model or albedo fails to load is skipped alone.
-A missing `sign` or rune font skips both rune carvings; dedicated servers get no icons.
+A missing `sign` or rune font skips both rune carvings; dedicated servers get no icons. A missing
+`Candle_resin` leaves candles without comfort.

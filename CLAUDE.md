@@ -17,7 +17,8 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
   `src/HearthfirePlugin.cs` is the plugin.
 - `src/Cask/`: `CaskPiece.cs` the cask, `FermenterPatches.cs` the conversion-list patch.
 - `src/Crate/`: `CratePiece.cs` the crate.
-- `src/Lights/`: `HangingCorePiece.cs` the hanging surtling core.
+- `src/Lights/`: `HangingCorePiece.cs` the hanging surtling core, `CandleComfort.cs` the vanilla
+  resin candle's comfort.
 - `src/Idols/`: `IdolPieces.cs` the idols.
 - `src/Runes/`: `RuneCarvingPieces.cs` registers the rune carvings, `RuneCarving.cs` is their
   component, `RuneFont.cs` the vanilla rune font and the text mapping, `RuneGlow.cs` the day/night
@@ -44,11 +45,13 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
   Changing that mapping changes every carving in every world.
 - **Vanilla assets are shared.** Never modify the `fermenter`, `dvergrprops_barrel`, `piece_chest_wood`,
   `dvergrprops_crate`, `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`, `stone_pillar`,
-  `guard_stone` or `sign` prefabs or their materials; edit only the clones and copies.
+  `guard_stone` or `sign` prefabs or their materials; edit only the clones and copies. The one
+  deliberate exception is `Candle_resin`: `CandleComfort` gives the vanilla prefab's `Piece` 1
+  comfort in the lights group (only if it has none), so every candle counts.
 - **Docs follow code.** `package/README.md` is a short personal intro and one pieces table (what
   each piece does, hammer tab, station, cost); a new piece adds a row. In the same change the table
   stays in sync with `CaskPiece` (recipe, `FermentationDuration`, `CaskYield`) and
-  `FermenterPatches`, `CratePiece` (recipe, `InventoryWidth` x `InventoryHeight`), `HangingCorePiece` (recipe, no warmth or comfort), `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
+  `FermenterPatches`, `CratePiece` (recipe, `InventoryWidth` x `InventoryHeight`), `HangingCorePiece` (recipe, `Comfort` in the lights group, no warmth), `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
   `RuneCarving` (recipe, the c/e mapping, glow), and the idol names with
   `assets/translations/English.json`. Keep it terse; details belong in the code rules.
 

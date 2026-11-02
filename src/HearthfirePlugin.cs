@@ -39,6 +39,7 @@ namespace Hearthfire
             PrefabManager.OnVanillaPrefabsAvailable += CaskPiece.Register;
             PrefabManager.OnVanillaPrefabsAvailable += CratePiece.Register;
             PrefabManager.OnVanillaPrefabsAvailable += HangingCorePiece.Register;
+            PrefabManager.OnVanillaPrefabsAvailable += CandleComfort.Register;
             PrefabManager.OnVanillaPrefabsAvailable += IdolPieces.Register;
             PrefabManager.OnVanillaPrefabsAvailable += RuneCarvingPieces.Register;
 

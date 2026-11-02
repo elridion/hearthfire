@@ -9,8 +9,8 @@ namespace Hearthfire
     /// Builds and registers the hanging surtling core: a surtling core held in the big loop of a
     /// knotted rope that hangs by its small loop under a beam or roof, glowing without fuel. It
     /// clones the hanging brazier for its placement and support from above, then strips everything
-    /// that makes the brazier a fire (fuel, flames, heat, smoke, sound): the core never goes out, but
-    /// it gives no warmth or comfort either. The brazier is iron, so its build, hit and break sounds
+    /// that makes the brazier a fire (fuel, flames, heat, smoke, sound): the core never goes out and
+    /// gives light comfort, but no warmth. The brazier is iron, so its build, hit and break sounds
     /// are swapped for the wooden sign's. The rope is an embedded model (irons3th, CC BY 4.0).
     /// </summary>
     internal static class HangingCorePiece
@@ -55,6 +55,9 @@ namespace Hearthfire
         private const float LightRange = 12f;
         private const float LightIntensity = 1.2f;
         private static readonly Color s_lightColor = new Color(1f, 0.45f, 0.15f);
+
+        // Comfort in the lights group (Piece.ComfortGroup.Lantern).
+        private const int Comfort = 1;
 
         public static void Register()
         {
@@ -125,8 +128,10 @@ namespace Hearthfire
                 if (t && t != prefab.transform && t.CompareTag("snappoint")) Object.DestroyImmediate(t.gameObject);
 
             var pieceComponent = prefab.GetComponent<Piece>();
-            pieceComponent.m_comfort = 0;
-            pieceComponent.m_comfortGroup = Piece.ComfortGroup.None;
+            // Counts toward the lights comfort group like vanilla lanterns and candles, not the fire
+            // group the brazier had: it is a light, and still gives no warmth.
+            pieceComponent.m_comfort = Comfort;
+            pieceComponent.m_comfortGroup = Piece.ComfortGroup.Lantern;
             // Placement otherwise lines up the collider point closest to the aimed point with it: on
             // a sloped underside that is the wide box's top edge, so the ghost hung up to half the
             // core's width away from where it was aimed. With clipEverything the game puts the
