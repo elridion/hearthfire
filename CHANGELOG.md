@@ -1,11 +1,12 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - The hanging surtling core now gives 1 comfort in the lights group, like lanterns and candles.
   It still gives no warmth.
 - The vanilla resin candle also gives 1 comfort in the lights group, including candles already
   built. Lights don't stack: only the best light nearby counts.
+- Players on 0.2.x cannot play together with 0.3.0; everyone, including the server, needs 0.3.0.
 
 ## 0.2.4
 
