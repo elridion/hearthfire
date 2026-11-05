@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
 
 - The hanging surtling core and the vanilla resin candle no longer give comfort, as before 0.3.0.
+- Players on 0.3.x cannot play together with 0.4.0; everyone, including the server, needs 0.4.0.
 
 ## 0.3.1
 
