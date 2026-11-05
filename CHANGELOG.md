@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The hanging surtling core and the vanilla resin candle no longer give comfort, as before 0.3.0.
+
 ## 0.3.1
 
 - Rune carvings fade into their new glow over a second instead of popping, when you enter or
