@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- No changes in game; this release only updates the mod page.
+
 ## 0.4.0
 
 - The hanging surtling core and the vanilla resin candle no longer give comfort, as before 0.3.0.
