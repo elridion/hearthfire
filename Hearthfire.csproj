@@ -50,7 +50,7 @@
 
   <!-- Thunderstore/Hexium package: dotnet build -c Release -t:Package -->
   <PropertyGroup>
-    <PackageDescription>A small set of vanilla-style building pieces to make your homestead your own.</PackageDescription>
+    <PackageDescription>A handful of building pieces that look like they shipped with the game. Brew mead in a Dvergr cask, store gear in a Dvergr crate, hang a surtling core that never goes out, and decorate with stone idols and rune carvings.</PackageDescription>
     <PackageWebsite>https://discord.gg/wqUA7vvvp2</PackageWebsite>
     <PackageDependencies>"ValheimModding-Jotunn-2.30.2"</PackageDependencies>
     <PackageStagingDir>$(BaseIntermediateOutputPath)package\</PackageStagingDir>

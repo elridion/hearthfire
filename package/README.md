@@ -1,38 +1,48 @@
 # Hearthfire
 
-Pieces I handpicked for my own homestead because I find them cool, kept close to vanilla.
+A handful of building pieces that look like they shipped with the game. Brew mead in a Dvergr cask, store gear in a Dvergr crate, hang a surtling core that never goes out, and decorate with stone idols and rune carvings.
+
+## Features
+
+- The Dvergr cask is a better fermenter: it brews in 30 minutes instead of 40 and gives 8 meads
+  instead of 6, also for other mods' meads.
+- The Dvergr crate is storage that looks at home outside, with 4 x 4 slots.
+- The hanging surtling core glows without fuel under a beam or roof.
+- Twelve weathered stone idols, and rune carvings you write on like a sign.
+- Translated into every language Valheim offers except Abenaki.
 
 ## Pieces
 
-| Piece | What it does | Tab | Station | Cost |
-| --- | --- | --- | --- | --- |
-| Dvergr cask | A better fermenter: 30 minutes instead of 40, 8 meads instead of 6, also for other mods' meads | Crafting | Workbench | 30 Fine wood, 5 Black metal, 10 Resin |
-| Dvergr crate | Storage that looks at home outside, 4 x 4 slots; the lid opens while in use | Storage | Workbench | 10 Corewood, 10 Bronze nails |
-| Hanging surtling core | Held in a knotted rope under a beam or roof, it glows without fuel, never going out; no warmth or comfort | Lighting | Workbench | 1 Surtling core, 2 Leather scraps |
-| Stone idol I to XII | Twelve weathered stone idols; Stone idol I's bowl holds whatever you place in it | Decor | Stonecutter | 20 Stone each |
-| Rune carving (horizontal, vertical) | Write on it like a sign; the runes start where you aim, grey at noon, glowing more like embers towards midnight | Furniture | Workbench | 1 Coal each |
+| Piece | Tab | Station | Cost |
+| --- | --- | --- | --- |
+| Dvergr cask | Crafting | Workbench | 30 Fine wood, 5 Black metal, 10 Resin |
+| Dvergr crate | Storage | Workbench | 10 Corewood, 10 Bronze nails |
+| Hanging surtling core | Lighting | Workbench | 1 Surtling core, 2 Leather scraps |
+| Stone idol I to XII | Decor | Stonecutter | 20 Stone each |
+| Rune carving (horizontal, vertical) | Furniture | Workbench | 1 Coal each |
 
-Rune carvings write c as k and e as i, as Viking carvers did; other characters become runes too.
+## How to use
+
+- The hanging surtling core gives no warmth or comfort; it is only a light.
+- Stone idol I has a bowl that holds whatever you place in it.
+- Rune carvings start writing where you aim. The runes are grey at noon and glow more like embers
+  towards midnight. They write c as k and e as i, as Viking carvers did.
+
+## Installation
+
+- Needs [Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/).
+- Install on every client and the server, all at the same minor version of Hearthfire.
+- Uninstalling removes placed pieces without refunding them, including mead fermenting in a cask.
 
 ## Configuration
 
-Client-side settings in `elridion.hearthfire.cfg`, applied while playing.
+Settings are in `BepInEx/config/elridion.hearthfire.cfg` (or a config manager). They only change
+how rune carvings look on your screen and apply while playing.
 
 | Key | Default | Description |
 | --- | --- | --- |
-| MinGlow | 0 | Rune glow at noon, the brightest time, as a fraction of the ember glow; 0 is plain grey (0-1) |
-| MaxGlow | 0.8 | Rune glow at midnight and in always-dark places; the glow changes in a straight line between the two (0-2) |
-
-## Languages
-
-Every language Valheim offers except Abenaki. The translations are not checked by native speakers
-yet; corrections are welcome on GitHub.
-
-## Requirements
-
-[Jotunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/), on every client and the
-server, at the same minor version of Hearthfire. Uninstalling removes placed pieces without
-refunding them, including mead fermenting in a cask.
+| `MinGlow` | 0 | Rune glow at noon, as a fraction of the ember glow; 0 is plain grey (0-1). |
+| `MaxGlow` | 0.8 | Rune glow at midnight and in always-dark places (0-2). |
 
 ## Credits
 

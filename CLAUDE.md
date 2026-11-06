@@ -45,9 +45,10 @@ Stack, build, verification and git workflow are shared by all mods: see `../CLAU
 - **Vanilla assets are shared.** Never modify the `fermenter`, `dvergrprops_barrel`, `piece_chest_wood`,
   `dvergrprops_crate`, `piece_brazierceiling01`, `Pickable_SurtlingCoreStand`, `stone_pillar`,
   `guard_stone` or `sign` prefabs or their materials; edit only the clones and copies.
-- **Docs follow code.** `package/README.md` is a short personal intro and one pieces table (what
-  each piece does, hammer tab, station, cost); a new piece adds a row. In the same change the table
-  stays in sync with `CaskPiece` (recipe, `FermentationDuration`, `CaskYield`) and
+- **Docs follow code.** `package/README.md` is the store page and stays short: its first line
+  matches `<PackageDescription>`, then short features, one pieces table (hammer tab, station,
+  cost), a few usage notes, install notes and the settings table; a new piece adds a row. In the
+  same change the page stays in sync with `CaskPiece` (recipe, `FermentationDuration`, `CaskYield`) and
   `FermenterPatches`, `CratePiece` (recipe, `InventoryWidth` x `InventoryHeight`), `HangingCorePiece` (recipe, no warmth or comfort), `IdolPieces` (`StoneCost`, station, usage tag) and `RuneCarvingPieces` /
   `RuneCarving` (recipe, the c/e mapping, glow), and the idol names with
   `assets/translations/English.json`. Keep it terse; details belong in the code rules.
